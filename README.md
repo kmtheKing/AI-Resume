@@ -1,104 +1,156 @@
-# AI Resume Analyzer
+# ResumeAI — AI-Powered Resume Analyzer & Editor
 
-An advanced, full-stack AI Resume Analyzer powered by Google Gemini, Laravel, and React.
+A premium, full-stack AI Resume Analyzer powered by **Google Gemini**, **Laravel**, and **React**.
 
-This application allows users to upload their resumes (PDF, DOCX, TXT) and select their target field of work. The system parses the document text securely on the backend, feeds it alongside specialized industry prompts into the Gemini AI, and returns a detailed scoring and improvement matrix to a stunning React front-end application.
+Upload your resume, select your target industry, and receive an instant AI-generated score, strengths/weaknesses breakdown, ATS compatibility rating, and actionable improvement suggestions — all within a stunning dark-themed interface.
 
-## 🚀 Features
-- **Intelligent Text Extraction**: Uses `smalot/pdfparser` directly in PHP to read native PDF texts securely.
-- **Dynamic Field Selection**: Tailor the AI's analysis strictly to your chosen industry requirements.
-- **ATS Compatibility Scoring**: Generates a generic score to guess how well Applicant Tracking Systems will read your resume.
-- **Interactive AI Editor**: Highlight specific weak points on your resume and ask the backend to "Improve with Action Verbs" in real-time.
-- **Stunning UI**: A highly interactive Single Page Application powered by Vite, React, Framer Motion, and Tailwind CSS v4.
-- **Secure Architecture**: API keys are securely hidden in the Laravel backend; the React frontend interacts strictly through authenticated endpoint bridges.
-
-## 🛠️ Technology Stack
-- **Backend Framework**: Laravel 11.x
-- **Frontend library**: React (via `@vitejs/plugin-react`)
-- **Styling**: Tailwind CSS v4 (`@tailwindcss/vite`)
-- **Database**: MySQL (via Laravel Eloquent ORM)
-- **AI Integration**: Google Gemini API (`generativelanguage.googleapis.com`)
-- **PDF Extraction**: `smalot/pdfparser`
-- **Compiler**: Vite 8.x
+![ResumeAI Screenshot](public/images/hero.png)
 
 ---
 
-## 💻 Installation & Setup
+## ✨ Features
 
-### 1. Requirements
-- PHP 8.2 or higher
-- Composer
-- Node.js (v18 or higher) and NPM
-- MySQL database (e.g. XAMPP, Herd, Valet)
+- **AI-Powered Analysis** — Gemini 2.0 Flash evaluates your resume against industry-specific standards
+- **ATS Compatibility Score** — Understand how well applicant tracking systems can parse your resume
+- **Actionable Suggestions** — Get section-by-section improvement recommendations with clear reasoning
+- **Interactive AI Editor** — Highlight any text and click "AI Improve" to rewrite it with action verbs and quantified achievements
+- **Dynamic Industry Selection** — Admin-configurable fields of work with custom descriptions
+- **Drag & Drop Upload** — Supports PDF, DOCX, and TXT files via react-dropzone
+- **Dark Theme UI** — Premium dark interface with glassmorphism, scroll animations, and subtle glow effects
+- **Secure Architecture** — API keys stay server-side; React communicates through authenticated Laravel endpoints
 
-### 2. Clone the Repository
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Laravel 11.x (PHP 8.2+) |
+| **Frontend** | React 18 + TypeScript |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite`) |
+| **Animations** | Framer Motion + CSS scroll-reveal |
+| **Charts** | Recharts (radial score gauge) |
+| **AI Engine** | Google Gemini 2.0 Flash API |
+| **PDF Parsing** | smalot/pdfparser |
+| **Auth** | Laravel Breeze |
+| **Database** | MySQL (Eloquent ORM) |
+| **Build Tool** | Vite 8.x |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- PHP 8.2+, Composer
+- Node.js 18+, npm
+- MySQL (XAMPP, Herd, or standalone)
+- A [Google AI Studio](https://aistudio.google.com/) API key
+
+### Installation
+
 ```bash
-git clone <repository_url>
-cd AI-Resume/laravel
-```
+# Clone the repository
+git clone https://github.com/kmtheKing/AI-Resume.git
+cd AI-Resume
 
-### 3. Install Dependencies
-Install PHP dependencies via Composer:
-```bash
+# Install PHP dependencies
 composer install
-```
-Install Javascript dependencies via NPM:
-```bash
-npm install
-```
 
-### 4. Environment Variables
-Copy the `.env.example` file and configure your database and API keys:
-```bash
+# Install JS dependencies
+npm install
+
+# Environment setup
 cp .env.example .env
-```
-Ensure you generate an app key:
-```bash
 php artisan key:generate
 ```
 
-Open `.env` and configure:
+### Configure `.env`
+
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=your_database_name
+DB_DATABASE=ai_resume
 DB_USERNAME=root
 DB_PASSWORD=
 
-# Make sure to grab an API key from Google AI Studio
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### 5. Database Setup
-Run migrations to set up the necessary tables, and run the seeder to populate the `Field of Work` tags:
+### Database & Storage
+
 ```bash
 php artisan migrate --seed
-```
-*(If you do not have a seeder, simply register an admin account and add them via the `/admin/fields` route).*
-
-### 6. Linking Storage
-The backend actively stores and tracks analyzed resumes. Ensure the public disk is linked:
-```bash
 php artisan storage:link
 ```
 
-### 7. Running the Application
-You will need two terminal tabs open simultaneously for the application to function fully during development.
+### Run the Application
 
-**Terminal 1 (Laravel Backend):**
+Open **two terminals**:
+
 ```bash
+# Terminal 1 — Laravel backend
 php artisan serve
-```
 
-**Terminal 2 (Vite Server for React):**
-```bash
+# Terminal 2 — Vite dev server (for hot reload)
 npm run dev
 ```
 
-Visit `http://localhost:8000` to start using your AI Resume Analyzer!
+Visit **http://localhost:8000** to start analyzing resumes!
+
+> For production, run `npm run build` and only the Laravel server is needed.
 
 ---
 
-## 🔒 Security Notice
-**Do not** put your Google Gemini API key into any Javascript or React configuration variables. This application is explicitly designed to keep the API key safe in Laravel's `.env`, bridging API calls through authenticated `/analyze` routing.
+## 🔐 Security
+
+- The Gemini API key is stored exclusively in Laravel's `.env` file
+- The React frontend **never** touches the API key directly
+- All AI requests are proxied through authenticated Laravel controller endpoints
+- CSRF protection is enforced on all POST requests
+- Admin routes are protected via Laravel Breeze `auth` middleware
+
+---
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── ResumeAnalysisController.php   # AI analysis + improve endpoints
+│   │   └── FieldOfWorkController.php      # Admin CRUD for industries
+│   └── Models/
+│       ├── ResumeAnalysis.php
+│       └── FieldOfWork.php
+├── resources/
+│   ├── js/react/                          # React SPA
+│   │   ├── App.tsx                        # Main app with scroll animations
+│   │   ├── components/
+│   │   │   ├── Header.tsx
+│   │   │   ├── ResumeUpload.tsx
+│   │   │   ├── AnalysisDashboard.tsx
+│   │   │   └── ResumeEditor.tsx
+│   │   └── services/
+│   │       └── gemini.ts                  # Secure fetch bridge to Laravel
+│   └── views/
+│       └── upload.blade.php               # React mount point
+├── routes/web.php
+├── vite.config.js
+└── tsconfig.json
+```
+
+---
+
+## 🔑 Default Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `test@example.com` | `password` |
+
+Admin panel: **http://localhost:8000/admin/fields**
+
+---
+
+## 📄 License
+
+This project is open-sourced for educational purposes.
