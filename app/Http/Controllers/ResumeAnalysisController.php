@@ -66,7 +66,7 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
 - 'suggestions' (array of objects, each with 'section', 'improvement', and 'reason' string properties)
 - 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness).";
         
-        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}", [
+        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
             'generationConfig' => ['response_mime_type' => 'application/json'],
         ]);
@@ -121,7 +121,7 @@ Context/Goal:
 Section to improve:
 {$request->sectionText}";
 
-        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}", [
+        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]]
         ]);
 
