@@ -66,7 +66,7 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
 - 'suggestions' (array of objects, each with 'section', 'improvement', and 'reason' string properties)
 - 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness).";
         
-        $response = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={$apiKey}", [
+        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
             'generationConfig' => ['response_mime_type' => 'application/json'],
         ]);
@@ -91,7 +91,13 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
         }
 
         $analysis->update(['status' => 'failed']);
-        return response()->json(['error' => 'AI API request failed: ' . $response->body()], 500);
+        
+        $statusCode = $response->status();
+        if ($statusCode === 429) {
+            return response()->json(['error' => 'Rate limit reached. The API tier allows limited requests per minute. Please wait 30-60 seconds and try again.'], 429);
+        }
+        
+        return response()->json(['error' => 'AI analysis failed (HTTP ' . $statusCode . '). Please try again shortly.'], 500);
     }
 
     public function improveSection(Request $request) 
@@ -115,7 +121,7 @@ Context/Goal:
 Section to improve:
 {$request->sectionText}";
 
-        $response = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={$apiKey}", [
+        $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]]
         ]);
 

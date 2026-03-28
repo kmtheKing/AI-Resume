@@ -23,7 +23,7 @@ interface AnalysisDashboardProps {
 
 export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) {
   const chartData = [
-    { name: 'Score', value: analysis.score, fill: '#2563eb' }
+    { name: 'Score', value: analysis.score, fill: '#6366f1' }
   ];
 
   return (
@@ -31,7 +31,7 @@ export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Score Card */}
         <div className="lg:col-span-1 glass-card rounded-3xl p-8 flex flex-col items-center justify-center text-center">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-6">Overall Score</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-6">Overall Score</h3>
           <div className="relative h-48 w-48">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart 
@@ -42,15 +42,15 @@ export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) 
                 endAngle={450}
               >
                 <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                <RadialBar background dataKey="value" cornerRadius={10} angleAxisId={0} />
+                <RadialBar background={{ fill: 'var(--color-dark-surface)' }} dataKey="value" cornerRadius={10} angleAxisId={0} />
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-bold text-slate-900 font-display">{analysis.score}</span>
-              <span className="text-sm font-medium text-slate-500">/ 100</span>
+              <span className="text-5xl font-bold text-[var(--color-text-primary)] font-display">{analysis.score}</span>
+              <span className="text-sm font-medium text-[var(--color-text-muted)]">/ 100</span>
             </div>
           </div>
-          <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
+          <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-accent-glow)] text-[var(--color-accent)] text-sm font-medium border border-[var(--color-accent)]/20">
             <TrendingUp className="h-4 w-4" />
             ATS Compatibility: {analysis.atsCompatibility}%
           </div>
@@ -59,35 +59,35 @@ export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) 
         {/* Summary Card */}
         <div className="lg:col-span-2 glass-card rounded-3xl p-8">
           <div className="flex items-center gap-2 mb-4">
-            <Zap className="h-5 w-5 text-amber-500 fill-amber-500" />
-            <h3 className="text-lg font-bold text-slate-900 font-display">AI Summary</h3>
+            <Zap className="h-5 w-5 text-amber-400 fill-amber-400" />
+            <h3 className="text-lg font-bold text-[var(--color-text-primary)] font-display">AI Summary</h3>
           </div>
-          <p className="text-slate-600 leading-relaxed mb-8">
+          <p className="text-[var(--color-text-secondary)] leading-relaxed mb-8">
             {analysis.summary}
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" /> Strengths
               </h4>
               <ul className="space-y-3">
                 {analysis.strengths.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                    <div className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
+                    <div className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
                     {s}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-rose-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-rose-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <AlertCircle className="h-4 w-4" /> Areas to Improve
               </h4>
               <ul className="space-y-3">
                 {analysis.weaknesses.map((w, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                    <div className="mt-1 h-1.5 w-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
+                    <div className="mt-1 h-1.5 w-1.5 rounded-full bg-rose-400 shrink-0" />
                     {w}
                   </li>
                 ))}
@@ -101,12 +101,12 @@ export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) 
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-blue-600" />
-            <h3 className="text-xl font-bold text-slate-900 font-display">Actionable Suggestions</h3>
+            <Target className="h-5 w-5 text-[var(--color-accent)]" />
+            <h3 className="text-xl font-bold text-[var(--color-text-primary)] font-display">Actionable Suggestions</h3>
           </div>
           <button 
             onClick={onEdit}
-            className="flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)] hover:text-[#818cf8] transition-colors"
           >
             Open Editor <ArrowRight className="h-4 w-4" />
           </button>
@@ -117,16 +117,16 @@ export function AnalysisDashboard({ analysis, onEdit }: AnalysisDashboardProps) 
             <motion.div 
               key={i}
               whileHover={{ y: -4 }}
-              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all"
+              className="bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] rounded-2xl p-6 hover:border-[var(--color-accent)]/30 hover:shadow-lg hover:shadow-[var(--color-accent-glow)] transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                <span className="px-3 py-1 rounded-lg bg-[var(--color-dark-surface)] text-[var(--color-text-muted)] text-xs font-bold uppercase tracking-wider">
                   {s.section}
                 </span>
-                <ChevronRight className="h-4 w-4 text-slate-300" />
+                <ChevronRight className="h-4 w-4 text-[var(--color-dark-border)]" />
               </div>
-              <h4 className="font-bold text-slate-900 mb-2">{s.improvement}</h4>
-              <p className="text-sm text-slate-500 leading-relaxed">{s.reason}</p>
+              <h4 className="font-bold text-[var(--color-text-primary)] mb-2">{s.improvement}</h4>
+              <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">{s.reason}</p>
             </motion.div>
           ))}
         </div>

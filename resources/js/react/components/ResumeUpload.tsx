@@ -12,7 +12,6 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>('');
   
-  // Load dynamic fields from the backend
   const fields = (window as any).AppConfig?.fieldsOfWork || [];
 
   const onDrop = useCallback((acceptedFiles: File[], _fileRejections: FileRejection[]) => {
@@ -37,9 +36,9 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       {/* Dynamic Fields Section */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
-        <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 mb-6 font-display">
-          <Tag className="h-5 w-5 text-blue-600" />
+      <div className="rounded-3xl border border-[var(--color-dark-border)] bg-[var(--color-dark-card)] p-8 shadow-lg">
+        <h3 className="flex items-center gap-2 text-xl font-bold text-[var(--color-text-primary)] mb-6 font-display">
+          <Tag className="h-5 w-5 text-[var(--color-accent)]" />
           Select Target Industry
         </h3>
         
@@ -52,8 +51,8 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
                 selectedTag === field.name
-                  ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200"
-                  : "bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50",
+                  ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-lg shadow-[var(--color-accent-glow)]"
+                  : "bg-[var(--color-dark-surface)] text-[var(--color-text-secondary)] border-[var(--color-dark-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]",
                 isAnalyzing && "opacity-50 cursor-not-allowed"
               )}
             >
@@ -63,7 +62,7 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
         </div>
         
         {selectedTag && (
-          <div className="mt-4 p-4 rounded-xl bg-blue-50/50 border border-blue-100 text-sm text-slate-600">
+          <div className="mt-4 p-4 rounded-xl bg-[var(--color-accent-glow)] border border-[var(--color-accent)]/20 text-sm text-[var(--color-text-secondary)]">
             {fields.find((f: any) => f.name === selectedTag)?.description}
           </div>
         )}
@@ -76,8 +75,8 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
             className={cn(
               "relative group cursor-pointer rounded-3xl border-2 border-dashed p-8 transition-all duration-300 ease-in-out md:col-span-2",
               isDragActive 
-                ? "border-blue-500 bg-blue-50/50" 
-                : "border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50/50",
+                ? "border-[var(--color-accent)] bg-[var(--color-accent-glow)]" 
+                : "border-[var(--color-dark-border)] bg-[var(--color-dark-card)] hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-dark-hover)]",
               isAnalyzing && "opacity-50 cursor-not-allowed"
             )}
             style={{ height: '300px' }}
@@ -86,17 +85,17 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className={cn(
                 "mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110",
-                isDragActive ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-400"
+                isDragActive ? "bg-[var(--color-accent)]/20 text-[var(--color-accent)]" : "bg-[var(--color-dark-surface)] text-[var(--color-text-muted)]"
               )}>
                 <Upload className="h-8 w-8" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-slate-900">
+              <h3 className="mb-2 text-xl font-semibold text-[var(--color-text-primary)]">
                 {isDragActive ? "Drop your resume here" : "Upload your resume"}
               </h3>
-              <p className="mb-6 text-sm text-slate-500 max-w-xs">
+              <p className="mb-6 text-sm text-[var(--color-text-muted)] max-w-xs">
                 Drag and drop your PDF, DOCX or TXT file here.
               </p>
-              <div className="flex items-center gap-4 text-xs text-slate-400">
+              <div className="flex items-center gap-4 text-xs text-[var(--color-text-muted)]">
                 <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> PDF</span>
                 <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> DOCX</span>
                 <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> TXT</span>
@@ -104,14 +103,14 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
             </div>
           </div>
         ) : (
-          <div className="md:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col md:flex-row items-center gap-6 justify-between">
+          <div className="md:col-span-2 rounded-3xl border border-[var(--color-dark-border)] bg-[var(--color-dark-card)] p-6 shadow-lg flex flex-col md:flex-row items-center gap-6 justify-between">
             <div className="flex items-center gap-4 flex-1">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
                 <FileText className="h-8 w-8" />
               </div>
               <div className="truncate">
-                <h4 className="font-bold text-slate-900 text-lg truncate">{file.name}</h4>
-                <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
+                <h4 className="font-bold text-[var(--color-text-primary)] text-lg truncate">{file.name}</h4>
+                <p className="text-sm text-[var(--color-text-muted)]">{(file.size / 1024).toFixed(1)} KB</p>
               </div>
             </div>
             
@@ -119,7 +118,7 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
               {!isAnalyzing && (
                 <button 
                   onClick={() => setFile(null)}
-                  className="rounded-full p-3 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                  className="rounded-full p-3 text-[var(--color-text-muted)] hover:bg-[var(--color-dark-hover)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -129,10 +128,10 @@ export function ResumeUpload({ onUpload, isAnalyzing }: ResumeUploadProps) {
                 onClick={() => onUpload(file, selectedTag)}
                 disabled={!file || !selectedTag || isAnalyzing}
                 className={cn(
-                  "flex-1 md:flex-none px-8 py-3 rounded-full font-bold text-white transition-all",
+                  "flex-1 md:flex-none px-8 py-3 rounded-full font-bold text-white transition-all duration-200",
                   (!file || !selectedTag || isAnalyzing)
-                    ? "bg-slate-300 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200"
+                    ? "bg-[var(--color-dark-border)] text-[var(--color-text-muted)] cursor-not-allowed"
+                    : "bg-[var(--color-accent)] hover:bg-[var(--color-accent-muted)] hover:shadow-lg hover:shadow-[var(--color-accent-glow)]"
                 )}
               >
                 {isAnalyzing ? (

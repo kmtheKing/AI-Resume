@@ -1,0 +1,22 @@
+Jane Doe
+Software Engineer
+Email: jane.doe@example.com
+Phone: (555) 123-4567
+
+--- EXPERIENCE ---
+Frontend Developer at TechCorp (2020 - Present)
+- Built user interfaces using React and Tailwind CSS.
+- Maintained legacy databases in MySQL and built REST endpoints in Laravel.
+- Reduced loading times by 20% across the main application by optimizing queries.
+- Was responsible for designing the pricing page layout and working closely with PMs.
+
+Junior Web Developer at StartUpInc (2018 - 2020)
+- Assisted backend team with Node.js API development.
+- Wrote unit tests and helped deploy applications securely.
+
+--- EDUCATION ---
+Bachelor of Science in Computer Science
+University of Technology, graduated 2018.
+
+--- SKILLS ---
+JavaScript, React, Tailwind CSS, PHP, Laravel, Node.js, MySQL, Git, Docker.
