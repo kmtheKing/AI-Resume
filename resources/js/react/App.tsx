@@ -8,13 +8,16 @@ import { Header } from './components/Header';
 import { ResumeUpload } from './components/ResumeUpload';
 import { AnalysisDashboard } from './components/AnalysisDashboard';
 import { ResumeEditor } from './components/ResumeEditor';
+import { PricingPage } from './components/PricingPage';
+import { PaymentForm } from './components/PaymentForm';
+import { PaymentSuccess } from './components/PaymentSuccess';
 import { analyzeResume, ResumeAnalysis } from './services/gemini';
 import { Sparkles, ArrowLeft, FileText, Target, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-type AppState = 'upload' | 'analyzing' | 'results' | 'editor';
+type AppState = 'upload' | 'analyzing' | 'results' | 'editor' | 'pricing' | 'payment' | 'success';
 
-/* Scroll-reveal hook: observes elements and adds .revealed class */
+/* Scroll-reveal hook */
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -47,6 +50,7 @@ export default function App() {
   const [state, setState] = useState<AppState>('upload');
   const [resumeText, setResumeText] = useState('');
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
   const scrollRef = useScrollReveal();
 
   const handleUpload = async (file: File, field: string) => {
@@ -69,6 +73,8 @@ export default function App() {
       
       <main className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
         <AnimatePresence mode="wait">
+          
+          {/* LANDING PAGE */}
           {state === 'upload' && (
             <motion.div 
               key="upload"
@@ -78,7 +84,6 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-20"
             >
-              {/* Hero */}
               <div className="text-center space-y-6 max-w-3xl mx-auto">
                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-display leading-[1.1] text-[var(--color-text-primary)]">
                   Land your dream job with <span className="gradient-text">ResumeAI</span>
@@ -184,6 +189,7 @@ export default function App() {
             </motion.div>
           )}
 
+          {/* ANALYZING SPINNER */}
           {state === 'analyzing' && (
             <motion.div 
               key="analyzing"
@@ -205,6 +211,7 @@ export default function App() {
             </motion.div>
           )}
 
+          {/* STAGE 1: RESULTS — Summary + Score only */}
           {state === 'results' && analysis && (
             <motion.div 
               key="results"
@@ -225,11 +232,12 @@ export default function App() {
               
               <AnalysisDashboard 
                 analysis={analysis} 
-                onEdit={() => setState('editor')} 
+                onContinue={() => setState('editor')} 
               />
             </motion.div>
           )}
 
+          {/* STAGE 2+3: EDITOR with Big Suggestions + Premium Preview */}
           {state === 'editor' && (
             <motion.div 
               key="editor"
@@ -248,9 +256,67 @@ export default function App() {
                 <h2 className="text-xl font-bold text-[var(--color-text-primary)] font-display">AI Resume Editor</h2>
               </div>
               
-              <ResumeEditor initialContent={resumeText} />
+              <ResumeEditor 
+                initialContent={resumeText} 
+                isPremium={isPremium}
+                onPricingClick={() => setState('pricing')}
+              />
             </motion.div>
           )}
+
+          {/* STAGE 4a: PRICING PAGE */}
+          {state === 'pricing' && (
+            <motion.div 
+              key="pricing"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-8"
+            >
+              <button 
+                onClick={() => setState('editor')}
+                className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" /> Back to Editor
+              </button>
+              
+              <PricingPage 
+                onSelectPro={() => setState('payment')}
+                onBack={() => setState('editor')}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 4b: DUMMY PAYMENT */}
+          {state === 'payment' && (
+            <motion.div 
+              key="payment"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <PaymentForm 
+                onComplete={() => {
+                  setIsPremium(true);
+                  setState('success');
+                }}
+                onBack={() => setState('pricing')}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 5: SUCCESS */}
+          {state === 'success' && (
+            <motion.div 
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+            >
+              <PaymentSuccess onReturn={() => setState('editor')} />
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </main>
     </div>
