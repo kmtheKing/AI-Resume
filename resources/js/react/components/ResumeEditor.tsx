@@ -40,6 +40,51 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
     }
   };
 
+  const handleSavePDF = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    // Parse content into structured sections for professional formatting
+    const lines = content.split('\n').filter(l => l.trim());
+    let htmlBody = '';
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Detect section headings (all caps or known keywords)
+      if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+        htmlBody += `<h2 style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#6366f1;border-bottom:1.5px solid #e2e2e2;padding-bottom:4px;margin:18px 0 8px 0;font-weight:700;">${trimmed}</h2>`;
+      } else {
+        htmlBody += `<p style="margin:3px 0;font-size:11pt;line-height:1.55;color:#1a1a1a;">${trimmed}</p>`;
+      }
+    }
+
+    // Extract name (first line) for the header
+    const name = lines[0] || 'Resume';
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${name} - Resume</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap');
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          @page { size: A4; margin: 20mm 18mm; }
+          body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; padding: 40px; max-width: 800px; margin: 0 auto; }
+          @media print {
+            body { padding: 0; }
+            .no-print { display: none !important; }
+          }
+        </style>
+      </head>
+      <body>
+        ${htmlBody}
+        <script>setTimeout(() => { window.print(); }, 300);<\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col h-[700px] bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] rounded-3xl overflow-hidden shadow-2xl">
@@ -87,8 +132,11 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
               {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               AI Improve
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] rounded-xl text-sm font-bold hover:opacity-90 transition-all">
-              <Save className="h-4 w-4" /> Save
+            <button 
+              onClick={handleSavePDF}
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] rounded-xl text-sm font-bold hover:opacity-90 transition-all"
+            >
+              <Save className="h-4 w-4" /> Save PDF
             </button>
           </div>
         </div>
