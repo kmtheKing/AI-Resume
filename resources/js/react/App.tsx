@@ -126,12 +126,14 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
                   {[
-                    { name: "The Executive", desc: "Clean, traditional layout perfect for corporate and finance roles.", color: "bg-[#818cf8]" },
-                    { name: "The Creative", desc: "Modern, slightly colorful design for tech, design, and marketing.", color: "bg-[var(--color-accent)]" },
-                    { name: "The Standard", desc: "The ultimate ATS parser friendly layout. Functional and direct.", color: "bg-emerald-500" }
+                    { name: "Classic Professional", desc: "Clean, traditional layout perfect for corporate and finance roles.", image: "/assets/template-classic.png" },
+                    { name: "Modern Minimalist", desc: "Modern, slightly colorful design for tech, design, and marketing.", image: "/assets/template-modern.png" },
+                    { name: "Executive Pro", desc: "The ultimate ATS parser friendly layout. Functional and direct.", image: "/assets/template-executive.png" }
                   ].map((tpl, i) => (
                     <div key={i} className="group relative rounded-2xl border border-[var(--color-dark-border)] bg-[var(--color-dark-card)] p-2 hover:border-[var(--color-accent)]/40 hover:shadow-xl hover:shadow-[var(--color-accent-glow)] transition-all duration-300 cursor-pointer hover-lift">
-                      <div className={`w-full aspect-[1/1.4] rounded-xl ${tpl.color} opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-300 mb-4`} />
+                      <div className="w-full aspect-[1/1.4] rounded-xl overflow-hidden mb-4 border border-[var(--color-dark-border)] group-hover:border-[var(--color-accent)]/40 transition-all">
+                        <img src={tpl.image} alt={tpl.name} className="w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity" />
+                      </div>
                       <div className="px-4 pb-4 space-y-2">
                         <h3 className="font-bold text-[var(--color-text-primary)]">{tpl.name}</h3>
                         <p className="text-sm text-[var(--color-text-muted)]">{tpl.desc}</p>

@@ -84,7 +84,29 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
            </div>
          </div>
        `; 
+    } else if (selectedTemplate === 'executive') {
+       // Executive bold corporate layout
+       htmlBody = `
+         <div style="border-top: 6px solid #1f2937; padding-top: 30px; margin-bottom: 30px;">
+           <h1 style="font-size: 32pt; text-align: center; margin-bottom: 8px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; color: #111;">${name}</h1>
+           <p style="text-align: center; font-size: 11pt; color: #4b5563; font-weight: 500;">${lines[1] ?? ''}</p>
+         </div>
+       `;
+       for (let i = 2; i < lines.length; i++) {
+         const trimmed = lines[i].trim();
+         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+           htmlBody += `
+             <div style="display: flex; align-items: center; margin: 25px 0 12px 0;">
+               <h2 style="font-size: 12pt; text-transform: uppercase; letter-spacing: 1.5px; color: #111; font-weight: 800; margin-right: 15px; white-space: nowrap;">${trimmed}</h2>
+               <div style="flex: 1; height: 2px; background: #e5e7eb;"></div>
+             </div>
+           `;
+         } else {
+           htmlBody += `<p style="margin:5px 0;font-size:10.5pt;line-height:1.6;color:#1f2937;">${trimmed}</p>`;
+         }
+       }
     } else {
+       // Classic centered academic/professional
        htmlBody = `
          <div style="text-align: center; margin-bottom: 24px;">
            <h1 style="font-size: 28pt; margin-bottom: 4px; font-weight: normal; letter-spacing: 1px;">${name}</h1>
@@ -359,6 +381,30 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
             <div>
               <p className="font-bold text-[var(--color-text-primary)]">Modern Minimalist</p>
               <p className="text-xs text-[var(--color-text-muted)]">Sleek sidebar design for tech & creative.</p>
+            </div>
+          </button>
+
+          {/* Executive Template Select */}
+          <button 
+            onClick={() => setSelectedTemplate('executive')} 
+            className="flex flex-col gap-3 group text-left flex-shrink-0"
+          >
+            <div className={cn(
+              "w-56 h-72 rounded-2xl overflow-hidden transition-all duration-300 border-2 relative",
+              selectedTemplate === 'executive' 
+                ? "border-[var(--color-accent)] scale-105 shadow-2xl shadow-[var(--color-accent-glow)] ring-4 ring-[var(--color-accent)]/20" 
+                : "border-[#333] opacity-70 group-hover:opacity-100 group-hover:border-[#555]"
+            )}>
+              <img src="/assets/template-executive.png" alt="Executive Template" className="w-full h-full object-cover object-top" />
+              {selectedTemplate === 'executive' && (
+                <div className="absolute top-3 right-3 bg-[var(--color-accent)] rounded-full p-1 text-white shadow-lg">
+                  <Check className="w-4 h-4" />
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-bold text-[var(--color-text-primary)]">Executive Pro</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Powerful corporate-ready layout.</p>
             </div>
           </button>
         </div>
