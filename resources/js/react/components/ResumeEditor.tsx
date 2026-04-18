@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import html2pdf from 'html2pdf.js';
 import { 
   Sparkles, 
   Save, 
@@ -30,6 +31,8 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
   const [selection, setSelection] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  const [selectedTemplate, setSelectedTemplate] = useState('classic');
+
   const AppConfig = (window as any).AppConfig;
   const isAuthenticated = AppConfig?.isAuthenticated ?? false;
 
@@ -52,48 +55,67 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
       setShowAuthModal(true);
       return;
     }
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
 
-    // Parse content into structured sections for professional formatting
     const lines = content.split('\n').filter(l => l.trim());
-    let htmlBody = '';
-    for (const line of lines) {
-      const trimmed = line.trim();
-      // Detect section headings (all caps or known keywords)
-      if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
-        htmlBody += `<h2 style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#6366f1;border-bottom:1.5px solid #e2e2e2;padding-bottom:4px;margin:18px 0 8px 0;font-weight:700;">${trimmed}</h2>`;
-      } else {
-        htmlBody += `<p style="margin:3px 0;font-size:11pt;line-height:1.55;color:#1a1a1a;">${trimmed}</p>`;
-      }
-    }
-
-    // Extract name (first line) for the header
     const name = lines[0] || 'Resume';
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${name} - Resume</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap');
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          @page { size: A4; margin: 20mm 18mm; }
-          body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; padding: 40px; max-width: 800px; margin: 0 auto; }
-          @media print {
-            body { padding: 0; }
-            .no-print { display: none !important; }
-          }
-        </style>
-      </head>
-      <body>
+    let htmlBody = '';
+    
+    if (selectedTemplate === 'modern') {
+       htmlBody = `
+         <div style="display: flex; min-height: 1122px;">
+           <div style="width: 33%; background: #1f2937; color: #ffffff; padding: 40px 20px;">
+             <h1 style="font-size: 26pt; margin-bottom: 12px; font-weight: 700; line-height: 1.1;">${name}</h1>
+             <p style="font-size: 10.5pt; color: #9ca3af; margin-bottom: 40px;">${lines[1] ?? 'Professional Contact Information'}</p>
+             <h2 style="font-size:11pt;text-transform:uppercase;letter-spacing:2px;color:#f3f4f6;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;margin:20px 0 10px 0;font-weight:700;">Profile Highlights</h2>
+             <p style="font-size:9.5pt; line-height: 1.6; color: #d1d5db;">Selected to emphasize strong capability and modern workflow adaptation.</p>
+           </div>
+           <div style="width: 67%; background: #ffffff; padding: 40px 30px;">
+       `;
+       for (let i = 2; i < lines.length; i++) {
+         const trimmed = lines[i].trim();
+         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+           htmlBody += `<h2 style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#e11d48;border-bottom:2px solid #f1f5f9;padding-bottom:4px;margin:24px 0 10px 0;font-weight:bold;">${trimmed}</h2>`;
+         } else {
+           htmlBody += `<p style="margin:4px 0;font-size:10.5pt;line-height:1.6;color:#334155;">${trimmed}</p>`;
+         }
+       }
+       htmlBody += `
+           </div>
+         </div>
+       `; 
+    } else {
+       htmlBody = `
+         <div style="text-align: center; margin-bottom: 24px;">
+           <h1 style="font-size: 28pt; margin-bottom: 4px; font-weight: normal; letter-spacing: 1px;">${name}</h1>
+           <p style="font-size: 11pt; color: #555;">${lines[1] ?? 'Contact Information'}</p>
+         </div>
+       `;
+       for (let i = 2; i < lines.length; i++) {
+         const trimmed = lines[i].trim();
+         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+           htmlBody += `<h2 style="font-size:12pt;text-transform:uppercase;letter-spacing:1px;color:#111;border-bottom:1px solid #ccc;padding-bottom:2px;margin:20px 0 8px 0;font-weight:bold;">${trimmed}</h2>`;
+         } else {
+           htmlBody += `<p style="margin:3px 0;font-size:10.5pt;line-height:1.5;color:#222;">${trimmed}</p>`;
+         }
+       }
+    }
+
+    const finalHtml = `
+      <div style="width: 800px; background: #ffffff; color: #1a1a1a; font-family: ${selectedTemplate === 'modern' ? "'Inter', sans-serif" : "'Times New Roman', serif"}; padding: ${selectedTemplate === 'modern' ? '0' : '40px'};">
         ${htmlBody}
-        <script>setTimeout(() => { window.print(); }, 300);<\/script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
+      </div>
+    `;
+
+    const opt = {
+      margin:       0,
+      filename:     `${name.replace(/\s+/g, '_')}_Resume.pdf`,
+      image:        { type: 'jpeg', quality: 1.0 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'px', format: [800, 1122], orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(finalHtml).save();
   };
 
   return (
@@ -278,6 +300,67 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Visual Template Selector Row */}
+      <div className="flex flex-col gap-4 mt-8 bg-[var(--color-dark-card)] p-6 rounded-3xl border border-[var(--color-dark-border)] shadow-xl">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-bold text-[var(--color-text-primary)] font-display">
+            Select Template Design
+          </h3>
+          <span className="text-sm font-medium text-[var(--color-accent)] bg-[var(--color-accent)]/10 px-3 py-1 rounded-full">
+            PDF Outputs
+          </span>
+        </div>
+        <div className="flex gap-8 overflow-x-auto pb-4 custom-scrollbar">
+          {/* Classic Template Select */}
+          <button 
+            onClick={() => setSelectedTemplate('classic')} 
+            className="flex flex-col gap-3 group text-left flex-shrink-0"
+          >
+            <div className={cn(
+              "w-56 h-72 rounded-2xl overflow-hidden transition-all duration-300 border-2 relative",
+              selectedTemplate === 'classic' 
+                ? "border-[var(--color-accent)] scale-105 shadow-2xl shadow-[var(--color-accent-glow)] ring-4 ring-[var(--color-accent)]/20" 
+                : "border-[#333] opacity-70 group-hover:opacity-100 group-hover:border-[#555]"
+            )}>
+              <img src="/assets/template-classic.png" alt="Classic Template" className="w-full h-full object-cover object-top" />
+              {selectedTemplate === 'classic' && (
+                <div className="absolute top-3 right-3 bg-[var(--color-accent)] rounded-full p-1 text-white shadow-lg">
+                  <Check className="w-4 h-4" />
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-bold text-[var(--color-text-primary)]">Classic Professional</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Perfect for traditional industries.</p>
+            </div>
+          </button>
+
+          {/* Modern Template Select */}
+          <button 
+            onClick={() => setSelectedTemplate('modern')} 
+            className="flex flex-col gap-3 group text-left flex-shrink-0"
+          >
+            <div className={cn(
+              "w-56 h-72 rounded-2xl overflow-hidden transition-all duration-300 border-2 relative",
+              selectedTemplate === 'modern' 
+                ? "border-[var(--color-accent)] scale-105 shadow-2xl shadow-[var(--color-accent-glow)] ring-4 ring-[var(--color-accent)]/20" 
+                : "border-[#333] opacity-70 group-hover:opacity-100 group-hover:border-[#555]"
+            )}>
+              <img src="/assets/template-modern.png" alt="Modern Template" className="w-full h-full object-cover object-top" />
+              {selectedTemplate === 'modern' && (
+                <div className="absolute top-3 right-3 bg-[var(--color-accent)] rounded-full p-1 text-white shadow-lg">
+                  <Check className="w-4 h-4" />
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-bold text-[var(--color-text-primary)]">Modern Minimalist</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Sleek sidebar design for tech & creative.</p>
+            </div>
+          </button>
         </div>
       </div>
 

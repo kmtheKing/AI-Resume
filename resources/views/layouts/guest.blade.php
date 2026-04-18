@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'ResumeAI') }} — {{ $pageTitle ?? 'Sign In' }}</title>
+    <title>{{ config('app.name', 'Resume Analyzer') }} — {{ $pageTitle ?? 'Sign In' }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -380,7 +380,7 @@
         <div class="brand">
             <a href="{{ route('home') }}" class="brand-link">
                 <div class="brand-icon">✦</div>
-                <span class="brand-name">Resume<span>AI</span></span>
+                <span class="brand-name">Resume <span>Analyzer</span></span>
             </a>
         </div>
 
