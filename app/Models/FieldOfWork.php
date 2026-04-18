@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FieldOfWork extends Model
 {
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'category', 'description'];
 
     public function analyses()
     {

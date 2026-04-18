@@ -7,7 +7,7 @@ use App\Models\FieldOfWork;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $fields = FieldOfWork::all();
+    $fields = FieldOfWork::orderBy('category')->orderBy('name')->get();
     return view('upload', compact('fields'));
 })->name('home');
 

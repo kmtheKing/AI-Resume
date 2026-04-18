@@ -18,8 +18,12 @@
                 routes: {
                     analyze: "{{ route('resume.analyze') }}",
                     home: "{{ route('home') }}",
-                    improve: "/api/resume/improve" // Endpoint we will build
+                    improve: "/api/resume/improve",
+                    login: "{{ route('login') }}",
+                    register: "{{ route('register') }}"
                 },
+                isAuthenticated: {{ auth()->check() ? 'true' : 'false' }},
+                user: @json(auth()->check() ? ['name' => auth()->user()->name, 'avatar' => auth()->user()->avatar] : null),
                 fieldsOfWork: @json($fields)
             };
         </script>

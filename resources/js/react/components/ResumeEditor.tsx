@@ -9,7 +9,10 @@ import {
   Loader2,
   Check,
   Lock,
-  Crown
+  Crown,
+  Download,
+  X,
+  LogIn
 } from 'lucide-react';
 import { improveResumeSection } from '@/src/services/gemini';
 import { cn } from '@/src/lib/utils';
@@ -25,6 +28,10 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
   const [isImproving, setIsImproving] = useState(false);
   const [view, setView] = useState<'edit' | 'preview'>('edit');
   const [selection, setSelection] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const AppConfig = (window as any).AppConfig;
+  const isAuthenticated = AppConfig?.isAuthenticated ?? false;
 
   const handleImprove = async () => {
     if (!selection) return;
@@ -41,6 +48,10 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
   };
 
   const handleSavePDF = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
@@ -134,9 +145,17 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
             </button>
             <button 
               onClick={handleSavePDF}
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] rounded-xl text-sm font-bold hover:opacity-90 transition-all"
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200",
+                isAuthenticated
+                  ? "bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] hover:opacity-90"
+                  : "bg-gradient-to-r from-rose-600 to-red-700 text-white hover:from-rose-500 hover:to-red-600 shadow-lg shadow-rose-900/30"
+              )}
             >
-              <Save className="h-4 w-4" /> Save PDF
+              {isAuthenticated
+                ? <><Save className="h-4 w-4" /> Save PDF</>
+                : <><Lock className="h-4 w-4" /> Sign In to Download</>
+              }
             </button>
           </div>
         </div>
@@ -273,6 +292,65 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
             AI Improve & Format
             <Sparkles className="h-5 w-5 group-hover:scale-125 transition-transform" />
           </button>
+        </div>
+      )}
+
+      {/* ── Auth Gate Modal ── */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowAuthModal(false)}>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+          {/* Modal Card */}
+          <div
+            className="relative w-full max-width-sm rounded-3xl border border-[#333] bg-[#0e0e0e] p-8 shadow-2xl max-w-md"
+            style={{ boxShadow: '0 0 60px rgba(225,29,72,0.2), 0 25px 50px rgba(0,0,0,0.7)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Top gradient line */}
+            <div className="absolute top-0 left-0 right-0 h-px rounded-t-3xl bg-gradient-to-r from-transparent via-rose-600 to-transparent" />
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Lock icon */}
+            <div className="flex items-center justify-center mb-5">
+              <div className="h-16 w-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.25)' }}>
+                <Download className="h-8 w-8" style={{ color: '#e11d48' }} />
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold text-center text-white mb-2" style={{ fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em' }}>
+              Sign in to Download
+            </h2>
+            <p className="text-center text-sm mb-7" style={{ color: '#64748b' }}>
+              Create a free account to download your AI-optimized resume as PDF.
+            </p>
+
+            {/* Register CTA */}
+            <a
+              href={(window as any).AppConfig?.routes?.register ?? '/register'}
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-bold text-white transition-all duration-200"
+              style={{ background: 'linear-gradient(135deg, #e11d48, #9f1239)', boxShadow: '0 4px 20px rgba(225,29,72,0.25)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
+            >
+              <LogIn className="h-4 w-4" />
+              Create Free Account
+            </a>
+
+            <p className="text-center text-xs mt-4" style={{ color: '#475569' }}>
+              Already have an account?{' '}
+              <a href={(window as any).AppConfig?.routes?.login ?? '/login'} style={{ color: '#e11d48', fontWeight: 600 }}>
+                Sign in
+              </a>
+            </p>
+          </div>
         </div>
       )}
     </div>
