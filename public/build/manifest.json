@@ -1,0 +1,45 @@
+{
+  "_chunk-DirA_cbD.js": {
+    "file": "assets/chunk-DirA_cbD.js",
+    "name": "chunk"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CKbGqnYD.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-oJy_It3e.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_chunk-DirA_cbD.js"
+    ]
+  },
+  "resources/js/react/index.css": {
+    "file": "assets/index-Cb50tFMV.css",
+    "name": "index",
+    "names": [
+      "index.css"
+    ],
+    "src": "resources/js/react/index.css",
+    "isEntry": true
+  },
+  "resources/js/react/main.tsx": {
+    "file": "assets/main-DfPGZGcJ.js",
+    "name": "main",
+    "src": "resources/js/react/main.tsx",
+    "isEntry": true,
+    "imports": [
+      "_chunk-DirA_cbD.js"
+    ],
+    "css": [
+      "assets/index-Cb50tFMV.css"
+    ]
+  }
+}
