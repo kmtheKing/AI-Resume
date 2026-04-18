@@ -15,11 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         $fields = [
             // ─── Technology & Digital Infrastructure ───
             ['category' => 'Technology & Digital Infrastructure', 'name' => 'Artificial Intelligence (AI) Development', 'description' => 'Creating generative models, LLMs, and specialized AI for business automation.'],
