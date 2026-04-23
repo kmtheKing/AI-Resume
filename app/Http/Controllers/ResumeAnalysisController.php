@@ -64,7 +64,8 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
 - 'strengths' (array of strings)
 - 'weaknesses' (array of strings)
 - 'suggestions' (array of objects, each with 'section', 'improvement', and 'reason' string properties)
-- 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness).";
+- 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness)
+- 'arrangedText' (string: the candidate's resume text beautifully formatted with clean spacing, line breaks, bullet points, and section headers to fix any PDF parsing messiness. Do not rewrite, just format neatly).";
         
         $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
@@ -83,10 +84,12 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
                 'result' => $resultInfo,
             ]);
 
+            $arrangedText = $resultInfo['arrangedText'] ?? $parsedText;
+
             return response()->json([
                 'message' => 'Analysis completed successfully.',
                 'analysis' => $analysis,
-                'parsedText' => $parsedText // Crucial for the interactive AI editor
+                'parsedText' => $arrangedText // Neatly formatted text
             ]);
         }
 
