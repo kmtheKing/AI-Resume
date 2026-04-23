@@ -504,32 +504,24 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
         </div>
       </div>
 
-      {/* Large "AI Improve & Format" Premium Button */}
+      {/* Large "Auto-Improve" Button */}
       <div className="flex justify-center">
-        {!isPremium ? (
-          <button
-            onClick={onPricingClick}
-            className="group flex items-center gap-3 px-12 py-5 rounded-2xl bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a78bfa] text-white font-bold text-xl hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
-          >
-            <Crown className="h-6 w-6 group-hover:rotate-12 transition-transform" />
-            Unlock Premium to AI Format
-            <Sparkles className="h-5 w-5 group-hover:scale-125 transition-transform" />
-          </button>
-        ) : (
-          <button
-            onClick={handleAutoImprove}
-            disabled={isAutoImproving}
-            className={cn(
-              "group flex items-center gap-3 px-12 py-5 rounded-2xl text-white font-bold text-xl transition-all duration-300",
-              isAutoImproving 
-                ? "bg-gray-700 cursor-not-allowed opacity-80" 
+        <button
+          onClick={!isPremium ? onPricingClick : handleAutoImprove}
+          disabled={isAutoImproving}
+          className={cn(
+            "group flex items-center gap-3 px-12 py-5 rounded-2xl text-white font-bold text-xl transition-all duration-300",
+            isAutoImproving 
+              ? "bg-gray-700 cursor-not-allowed opacity-80" 
+              : !isPremium 
+                ? "bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a78bfa] hover:shadow-2xl hover:shadow-purple-500/30 hover:scale-[1.03] active:scale-[0.98]"
                 : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:shadow-2xl hover:shadow-emerald-500/30 hover:scale-[1.03] active:scale-[0.98]"
-            )}
-          >
-            {isAutoImproving ? <Loader2 className="h-6 w-6 animate-spin" /> : <Sparkles className="h-6 w-6 group-hover:scale-125 transition-transform" />}
-            {isAutoImproving ? 'AI is Rewriting...' : 'Auto-Improve Entire Resume'}
-          </button>
-        )}
+          )}
+        >
+          {isAutoImproving ? <Loader2 className="h-6 w-6 animate-spin" /> : !isPremium ? <Crown className="h-6 w-6 group-hover:rotate-12 transition-transform" /> : <Sparkles className="h-6 w-6 group-hover:scale-125 transition-transform" />}
+          {isAutoImproving ? 'AI is Rewriting...' : 'Auto-Improve Entire Resume'}
+          {!isPremium && <Sparkles className="h-5 w-5 group-hover:scale-125 transition-transform" />}
+        </button>
       </div>
 
       {/* ── Auth Gate Modal ── */}

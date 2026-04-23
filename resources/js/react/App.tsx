@@ -77,8 +77,8 @@ function InterviewPrepModule({ field, onBack }: { field: string; onBack: () => v
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <button onClick={onBack} className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
-          <ArrowLeft className="h-4 w-4" /> Back to Editor
+        <button onClick={onBack} className="flex items-center gap-2 px-4 py-2 text-sm font-bold bg-[var(--color-dark-surface)] hover:bg-[var(--color-dark-hover)] border border-[var(--color-dark-border)] rounded-xl text-[var(--color-text-primary)] transition-all hover:-translate-x-1">
+          <ArrowLeft className="h-4 w-4" /> AI Resume Editor
         </button>
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-bold">
           <BookOpen className="h-4 w-4" /> Elite Feature — Interview Prep
