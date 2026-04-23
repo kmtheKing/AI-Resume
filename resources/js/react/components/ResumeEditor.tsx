@@ -195,17 +195,19 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col h-[700px] bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] rounded-3xl overflow-hidden shadow-2xl">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col h-[85vh] min-h-[600px] bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-dark-border)] bg-[var(--color-dark-surface)]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center bg-[var(--color-dark-bg)] border border-[var(--color-dark-border)] rounded-lg p-1">
+        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--color-dark-border)] bg-[var(--color-dark-surface)]/50 backdrop-blur-md sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center bg-[var(--color-dark-bg)] border border-[var(--color-dark-border)] rounded-2xl p-1.5 shadow-inner">
               <button 
                 onClick={() => setView('edit')}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
-                  view === 'edit' ? "bg-[var(--color-accent)] text-white shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                  "flex items-center gap-2 px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300",
+                  view === 'edit' 
+                    ? "bg-[var(--color-accent)] text-white shadow-[0_0_15px_var(--color-accent-glow)]" 
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-dark-hover)]"
                 )}
               >
                 <Layout className="h-4 w-4" /> Editor
@@ -213,55 +215,53 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
               <button 
                 onClick={() => setView('preview')}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
-                  view === 'preview' ? "bg-[var(--color-accent)] text-white shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                  "flex items-center gap-2 px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300",
+                  view === 'preview' 
+                    ? "bg-[var(--color-accent)] text-white shadow-[0_0_15px_var(--color-accent-glow)]" 
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-dark-hover)]"
                 )}
               >
                 <Eye className="h-4 w-4" /> Preview
               </button>
             </div>
-            <div className="h-6 w-px bg-[var(--color-dark-border)] mx-2" />
-            <div className="flex items-center gap-1">
-              <button className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-dark-hover)] rounded-lg transition-all"><Undo2 className="h-4 w-4" /></button>
-              <button className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-dark-hover)] rounded-lg transition-all"><Redo2 className="h-4 w-4" /></button>
+            <div className="h-8 w-px bg-[var(--color-dark-border)] mx-1" />
+            <div className="flex items-center gap-1 bg-[var(--color-dark-bg)]/50 rounded-xl p-1">
+              <button className="p-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-dark-hover)] rounded-lg transition-all"><Undo2 className="h-4 w-4" /></button>
+              <button className="p-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-dark-hover)] rounded-lg transition-all"><Redo2 className="h-4 w-4" /></button>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button 
               onClick={handleImprove}
               disabled={!selection || isImproving}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200",
+                "flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border",
                 selection 
-                  ? "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-muted)] shadow-lg shadow-[var(--color-accent-glow)]" 
-                  : "bg-[var(--color-dark-bg)] text-[var(--color-text-muted)] cursor-not-allowed"
+                  ? "bg-transparent border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white shadow-[0_0_20px_var(--color-accent-glow)]" 
+                  : "bg-[var(--color-dark-bg)] border-[var(--color-dark-border)] text-[var(--color-text-muted)] cursor-not-allowed"
               )}
             >
               {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              AI Improve
+              AI Improve Selection
             </button>
             <button 
               onClick={handleSavePDF}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200",
+                "flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-extrabold transition-all duration-300",
                 isAuthenticated
-                  ? "bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] hover:opacity-90"
-                  : "bg-gradient-to-r from-rose-600 to-red-700 text-white hover:from-rose-500 hover:to-red-600 shadow-lg shadow-rose-900/30"
+                  ? "bg-[var(--color-text-primary)] text-[var(--color-dark-bg)] hover:scale-[1.02] shadow-xl"
+                  : "bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-muted)] text-white hover:scale-[1.02] shadow-xl shadow-[var(--color-accent-glow)]"
               )}
             >
-              {isAuthenticated
-                ? <><Save className="h-4 w-4" /> Save PDF</>
-                : <><Lock className="h-4 w-4" /> Sign In to Download</>
-              }
+              <Download className="h-4 w-4" /> {isAuthenticated ? 'Download PDF' : 'Sign in to Download'}
             </button>
           </div>
         </div>
-
-        {/* Editor Area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Main Content */}
-          <div className="flex-1 p-8 overflow-y-auto bg-[var(--color-dark-card)] custom-scrollbar relative">
+        
+        <div className="flex flex-1 overflow-hidden">
+          {/* Main Content Area */}
+          <div className="flex-1 p-10 overflow-y-auto bg-[var(--color-dark-bg)] custom-scrollbar">
             {view === 'edit' ? (
               <div className="relative w-full h-full min-h-[600px]">
                 <div className="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words leading-relaxed font-sans text-lg text-transparent" aria-hidden="true">
