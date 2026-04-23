@@ -15,18 +15,21 @@ import {
   X,
   LogIn
 } from 'lucide-react';
-import { improveResumeSection } from '@/src/services/gemini';
+import { improveResumeSection, ResumeAnalysis } from '@/src/services/gemini';
 import { cn } from '@/src/lib/utils';
 
 interface ResumeEditorProps {
   initialContent: string;
+  analysis?: ResumeAnalysis;
   isPremium: boolean;
   onPricingClick: () => void;
 }
 
-export function ResumeEditor({ initialContent, isPremium, onPricingClick }: ResumeEditorProps) {
+export function ResumeEditor({ initialContent, analysis, isPremium, onPricingClick }: ResumeEditorProps) {
   const [content, setContent] = useState(initialContent);
   const [isImproving, setIsImproving] = useState(false);
+  const [isAutoImproving, setIsAutoImproving] = useState(false);
+  const [highlightedIndices, setHighlightedIndices] = useState<number[]>([]);
   const [view, setView] = useState<'edit' | 'preview'>('edit');
   const [selection, setSelection] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -47,6 +50,32 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
       console.error("Improvement failed:", error);
     } finally {
       setIsImproving(false);
+    }
+  };
+
+  const handleAutoImprove = async () => {
+    setIsAutoImproving(true);
+    try {
+      const improved = await improveResumeSection(content, "Rewrite this entire resume to be highly professional, impactful, and ATS-optimized. Correct grammar and use action verbs. Preserve the exact line break structure as much as possible.");
+      const oldLines = content.split('\n');
+      const newLines = improved.split('\n');
+      
+      const changedIndices: number[] = [];
+      newLines.forEach((line, i) => {
+        if (!oldLines.includes(line)) {
+          changedIndices.push(i);
+        }
+      });
+      
+      setContent(improved);
+      setHighlightedIndices(changedIndices);
+      
+      setTimeout(() => setHighlightedIndices([]), 10000);
+      
+    } catch (error) {
+      console.error("Auto-Improvement failed:", error);
+    } finally {
+      setIsAutoImproving(false);
     }
   };
 
@@ -209,13 +238,22 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
           {/* Main Content */}
           <div className="flex-1 p-8 overflow-y-auto bg-[var(--color-dark-card)] custom-scrollbar relative">
             {view === 'edit' ? (
-              <textarea
-                className="w-full h-full resize-none border-none focus:ring-0 bg-transparent text-[var(--color-text-secondary)] leading-relaxed font-sans text-lg outline-none"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                onMouseUp={() => setSelection(window.getSelection()?.toString() || '')}
-                placeholder="Paste your resume content here..."
-              />
+              <div className="relative w-full h-full min-h-[600px]">
+                <div className="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words leading-relaxed font-sans text-lg text-transparent" aria-hidden="true">
+                  {content.split('\n').map((line, i) => (
+                    <span key={i} className={highlightedIndices.includes(i) ? "bg-emerald-500/20 text-transparent rounded-sm px-1 -mx-1" : ""}>
+                      {line === '' ? ' ' : line}{'\n'}
+                    </span>
+                  ))}
+                </div>
+                <textarea
+                  className="absolute inset-0 w-full h-full resize-none border-none focus:ring-0 bg-transparent text-[var(--color-text-secondary)] leading-relaxed font-sans text-lg outline-none custom-scrollbar"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  onMouseUp={() => setSelection(window.getSelection()?.toString() || '')}
+                  placeholder="Paste your resume content here..."
+                />
+              </div>
             ) : (
               /* PREMIUM PREVIEW — blurred if not premium */
               <div className="relative">
@@ -320,24 +358,29 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
           <div className="w-80 border-l border-[var(--color-dark-border)] bg-[var(--color-dark-surface)] p-6 hidden xl:flex flex-col overflow-y-auto custom-scrollbar">
             <h4 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-widest mb-6">Writing Tips</h4>
             <div className="space-y-5 mb-8">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-[var(--color-accent)]">
-                  <Check className="h-4 w-4" />
-                  <span className="text-sm font-bold">Use Action Verbs</span>
+              {analysis?.weaknesses && analysis.weaknesses.length > 0 ? (
+                analysis.weaknesses.slice(0, 3).map((weakness, idx) => (
+                  <div key={idx} className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-[var(--color-accent)]">
+                      <Check className="h-4 w-4 shrink-0" />
+                      <span className="text-sm font-bold">Improvement Area</span>
+                    </div>
+                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed pl-6">
+                      {weakness}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-[var(--color-accent)]">
+                    <Check className="h-4 w-4" />
+                    <span className="text-sm font-bold">Use Action Verbs</span>
+                  </div>
+                  <p className="text-xs text-[var(--color-text-muted)] leading-relaxed pl-6">
+                    Instead of "Responsible for", use "Led", "Developed", or "Managed".
+                  </p>
                 </div>
-                <p className="text-xs text-[var(--color-text-muted)] leading-relaxed pl-6">
-                  Instead of "Responsible for", use "Led", "Developed", or "Managed".
-                </p>
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-[var(--color-accent)]">
-                  <Check className="h-4 w-4" />
-                  <span className="text-sm font-bold">Quantify Impact</span>
-                </div>
-                <p className="text-xs text-[var(--color-text-muted)] leading-relaxed pl-6">
-                  Add numbers like "Increased sales by 20%" or "Saved $5k monthly".
-                </p>
-              </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -346,18 +389,23 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
             {/* Reduced Big Suggestions */}
             <h4 className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-5">Key Suggestions</h4>
             <div className="space-y-5 flex-1">
-              <div className="p-4 rounded-2xl bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] space-y-2">
-                <h5 className="text-sm font-bold text-[var(--color-text-primary)]">🔧 Build Technical Value</h5>
-                <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                  Build a comprehensive Technical Skills section listing specific programming languages (e.g., Python, SQL, C++), frameworks (e.g., React), and tools. Detail existing class or personal projects with roles, tech stacks, challenges, and links to GitHub.
-                </p>
-              </div>
-              <div className="p-4 rounded-2xl bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] space-y-2">
-                <h5 className="text-sm font-bold text-[var(--color-text-primary)]">✨ Polish Professionalism</h5>
-                <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                  Add a concise professional summary/career objective. Replace percentage-based soft skills with concrete examples within project descriptions. Prioritize technical, relevant certifications and remove unrelated ones.
-                </p>
-              </div>
+              {analysis?.suggestions && analysis.suggestions.length > 0 ? (
+                analysis.suggestions.slice(0, 3).map((sugg, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] space-y-2">
+                    <h5 className="text-sm font-bold text-[var(--color-text-primary)]">✨ {sugg.section}</h5>
+                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+                      {sugg.improvement} <span className="opacity-70 mt-1 block">{sugg.reason}</span>
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="p-4 rounded-2xl bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] space-y-2">
+                  <h5 className="text-sm font-bold text-[var(--color-text-primary)]">🔧 Build Technical Value</h5>
+                  <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+                    Build a comprehensive Technical Skills section listing specific programming languages and tools.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Highlight tip */}
@@ -457,18 +505,32 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
       </div>
 
       {/* Large "AI Improve & Format" Premium Button */}
-      {!isPremium && (
-        <div className="flex justify-center">
+      <div className="flex justify-center">
+        {!isPremium ? (
           <button
             onClick={onPricingClick}
             className="group flex items-center gap-3 px-12 py-5 rounded-2xl bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a78bfa] text-white font-bold text-xl hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
           >
             <Crown className="h-6 w-6 group-hover:rotate-12 transition-transform" />
-            AI Improve & Format
+            Unlock Premium to AI Format
             <Sparkles className="h-5 w-5 group-hover:scale-125 transition-transform" />
           </button>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={handleAutoImprove}
+            disabled={isAutoImproving}
+            className={cn(
+              "group flex items-center gap-3 px-12 py-5 rounded-2xl text-white font-bold text-xl transition-all duration-300",
+              isAutoImproving 
+                ? "bg-gray-700 cursor-not-allowed opacity-80" 
+                : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:shadow-2xl hover:shadow-emerald-500/30 hover:scale-[1.03] active:scale-[0.98]"
+            )}
+          >
+            {isAutoImproving ? <Loader2 className="h-6 w-6 animate-spin" /> : <Sparkles className="h-6 w-6 group-hover:scale-125 transition-transform" />}
+            {isAutoImproving ? 'AI is Rewriting...' : 'Auto-Improve Entire Resume'}
+          </button>
+        )}
+      </div>
 
       {/* ── Auth Gate Modal ── */}
       {showAuthModal && (

@@ -377,6 +377,7 @@ export default function App() {
 
               <ResumeEditor
                 initialContent={resumeText}
+                analysis={analysis}
                 isPremium={isPremium}
                 onPricingClick={() => setState('pricing')}
               />
