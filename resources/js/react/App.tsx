@@ -285,7 +285,7 @@ export default function App() {
                       <div className="px-3 pb-4 space-y-2">
                         <h3 className="font-bold text-[var(--color-text-primary)]">{tpl.name}</h3>
                         <p className="text-sm text-[var(--color-text-muted)]">{tpl.desc}</p>
-                        <button className="text-sm font-bold text-[var(--color-accent)] mt-2 hover:underline">Preview Layout →</button>
+                        <button onClick={(e) => { e.stopPropagation(); window.open(tpl.image, '_blank'); }} className="text-sm font-bold text-[var(--color-accent)] mt-2 hover:underline">Preview Layout →</button>
                       </div>
                     </div>
                   ))}
