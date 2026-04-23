@@ -175,13 +175,39 @@ export default function App() {
   const [state, setState] = useState<AppState>('upload');
   const [resumeText, setResumeText] = useState('');
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
-  const [tier, setTier] = useState<PlanTier>('none');
+  const [tier, setTier] = useState<PlanTier>(() => {
+    return (localStorage.getItem('ai_resume_tier') as PlanTier) || 'none';
+  });
+  const [previousState, setPreviousState] = useState<AppState>('upload');
   const [selectedTierForPayment, setSelectedTierForPayment] = useState<'starter' | 'pro' | 'elite'>('pro');
   const [resumeField, setResumeField] = useState('');
   const scrollRef = useScrollReveal();
 
   const isPremium = tier === 'pro' || tier === 'elite';
   const hasInterviewPrep = tier === 'elite';
+
+  // Persist tier and update global theme color dynamically
+  useEffect(() => {
+    localStorage.setItem('ai_resume_tier', tier);
+    
+    const root = document.documentElement;
+    if (tier === 'elite') {
+      root.style.setProperty('--color-accent', '#f59e0b');
+      root.style.setProperty('--color-accent-muted', '#d97706');
+      root.style.setProperty('--color-accent-glow', 'rgba(245, 158, 11, 0.2)');
+    } else {
+      root.style.setProperty('--color-accent', '#e11d48');
+      root.style.setProperty('--color-accent-muted', '#be123c');
+      root.style.setProperty('--color-accent-glow', 'rgba(225, 29, 72, 0.2)');
+    }
+  }, [tier]);
+
+  const goToPricing = () => {
+    if (state !== 'pricing' && state !== 'payment' && state !== 'success') {
+      setPreviousState(state);
+    }
+    setState('pricing');
+  };
 
   const handleUpload = async (file: File, field: string) => {
     setState('analyzing');
@@ -205,7 +231,7 @@ export default function App() {
 
   const handlePaymentComplete = (completedTier: 'starter' | 'pro' | 'elite') => {
     setTier(completedTier);
-    setState('success');
+    setState(previousState);
   };
 
   const templates = [
@@ -216,7 +242,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--color-dark-bg)]">
-      <Header tier={tier} />
+      <Header tier={tier} onPricingClick={goToPricing} />
 
       <main className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
         <AnimatePresence mode="wait">
@@ -293,7 +319,7 @@ export default function App() {
               </section>
 
               {/* PRICING */}
-              <LandingPricingSection onUpgrade={() => setState('pricing')} />
+              <LandingPricingSection onUpgrade={goToPricing} />
 
             </motion.div>
           )}
@@ -379,7 +405,7 @@ export default function App() {
                 initialContent={resumeText}
                 analysis={analysis}
                 isPremium={isPremium}
-                onPricingClick={() => setState('pricing')}
+                onPricingClick={goToPricing}
               />
             </motion.div>
           )}
@@ -406,7 +432,7 @@ export default function App() {
               className="space-y-8"
             >
               <button
-                onClick={() => setState(analysis ? 'editor' : 'upload')}
+                onClick={() => setState(previousState)}
                 className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
@@ -414,7 +440,7 @@ export default function App() {
 
               <PricingPage
                 onSelectPlan={handleSelectPlan}
-                onBack={() => setState(analysis ? 'editor' : 'upload')}
+                onBack={() => setState(previousState)}
               />
             </motion.div>
           )}

@@ -1,5 +1,5 @@
 
-export function Header({ tier = 'none' }: { tier?: 'none' | 'starter' | 'pro' | 'elite' }) {
+export function Header({ tier = 'none', onPricingClick }: { tier?: 'none' | 'starter' | 'pro' | 'elite'; onPricingClick?: () => void }) {
   const AppConfig = (window as any).AppConfig;
   const isAuthenticated = AppConfig?.isAuthenticated ?? false;
   const userName = AppConfig?.user?.name ?? 'User';
@@ -21,7 +21,7 @@ export function Header({ tier = 'none' }: { tier?: 'none' | 'starter' | 'pro' | 
         </div>
         <nav className="hidden md:flex items-center gap-8">
           <a href="#how-it-works" className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200">How it works</a>
-          <a href="#pricing" className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200">Pricing</a>
+          <button onClick={onPricingClick || (() => { window.location.hash = '#pricing'; })} className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200">Pricing</button>
           <a href="#templates" className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200">Templates</a>
         </nav>
         <div className="flex items-center gap-4">
