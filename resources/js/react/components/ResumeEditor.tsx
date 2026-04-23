@@ -105,7 +105,12 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
              <h1 style="font-size: 26pt; margin-bottom: 12px; font-weight: 700; line-height: 1.1;">${name}</h1>
              <p style="font-size: 10.5pt; color: #9ca3af; margin-bottom: 40px;">${contactLine}</p>
              <h2 style="font-size:11pt;text-transform:uppercase;letter-spacing:2px;color:#f3f4f6;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;margin:20px 0 10px 0;font-weight:700;">Profile Highlights</h2>
-             <p style="font-size:9.5pt; line-height: 1.6; color: #d1d5db;">Selected to emphasize strong capability and modern workflow adaptation.</p>
+             <ul style="padding-left: 12px; margin: 0; list-style-type: disc;">
+               ${(analysis?.strengths || ['Highly capable professional', 'Strong adaptability to modern workflows', 'Proven track record of success'])
+                 .slice(0, 5)
+                 .map(s => `<li style="font-size:9.5pt; line-height: 1.6; color: #d1d5db; margin-bottom: 6px;">${s}</li>`)
+                 .join('')}
+             </ul>
            </div>
            <div style="width: 67%; background: #ffffff; padding: 40px 30px;">
        `;
@@ -307,7 +312,11 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                               <h1 className="text-2xl font-bold mb-2 leading-tight">{name}</h1>
                               <p className="text-xs text-gray-400 mb-8">{contact}</p>
                               <h2 className="text-xs uppercase tracking-widest border-b border-gray-600 pb-1 mt-5 mb-3 font-bold text-gray-100">Profile Highlights</h2>
-                              <p className="text-xs text-gray-300 leading-relaxed">Selected to emphasize strong capability and modern workflow adaptation.</p>
+                              <ul className="list-disc list-outside text-xs text-gray-300 leading-relaxed space-y-1.5 ml-3">
+                                {(analysis?.strengths || ['Highly capable professional', 'Strong adaptability to modern workflows', 'Proven track record of success']).slice(0, 5).map((s, idx) => (
+                                  <li key={idx} className="pl-1">{s}</li>
+                                ))}
+                              </ul>
                             </div>
                             <div className="w-2/3 p-6 md:p-8">
                               {contentLines.map((line, i) => {
