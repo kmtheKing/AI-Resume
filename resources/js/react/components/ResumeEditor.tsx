@@ -85,8 +85,16 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
       return;
     }
 
-    const lines = content.split('\n').filter(l => l.trim());
-    const name = lines[0] || 'Resume';
+    const rawLines = content.split('\n');
+    let firstContentIdx = 0;
+    while(firstContentIdx < rawLines.length && !rawLines[firstContentIdx].trim()) firstContentIdx++;
+    
+    const name = rawLines[firstContentIdx]?.trim() || 'Resume';
+    let contactIdx = firstContentIdx + 1;
+    while(contactIdx < rawLines.length && !rawLines[contactIdx].trim()) contactIdx++;
+    const contactLine = rawLines[contactIdx]?.trim() || '';
+
+    const lines = rawLines.slice(contactIdx + 1);
 
     let htmlBody = '';
     
@@ -95,16 +103,20 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
          <div style="display: flex; min-height: 1122px;">
            <div style="width: 33%; background: #1f2937; color: #ffffff; padding: 40px 20px;">
              <h1 style="font-size: 26pt; margin-bottom: 12px; font-weight: 700; line-height: 1.1;">${name}</h1>
-             <p style="font-size: 10.5pt; color: #9ca3af; margin-bottom: 40px;">${lines[1] ?? 'Professional Contact Information'}</p>
+             <p style="font-size: 10.5pt; color: #9ca3af; margin-bottom: 40px;">${contactLine}</p>
              <h2 style="font-size:11pt;text-transform:uppercase;letter-spacing:2px;color:#f3f4f6;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;margin:20px 0 10px 0;font-weight:700;">Profile Highlights</h2>
              <p style="font-size:9.5pt; line-height: 1.6; color: #d1d5db;">Selected to emphasize strong capability and modern workflow adaptation.</p>
            </div>
            <div style="width: 67%; background: #ffffff; padding: 40px 30px;">
        `;
-       for (let i = 2; i < lines.length; i++) {
+       for (let i = 0; i < lines.length; i++) {
          const trimmed = lines[i].trim();
-         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+         if (!trimmed) {
+           htmlBody += `<div style="height: 12px;"></div>`;
+         } else if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
            htmlBody += `<h2 style="font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#e11d48;border-bottom:2px solid #f1f5f9;padding-bottom:4px;margin:24px 0 10px 0;font-weight:bold;">${trimmed}</h2>`;
+         } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+           htmlBody += `<p style="margin:4px 0;font-size:10.5pt;line-height:1.6;color:#334155;padding-left:16px;text-indent:-8px;">${trimmed}</p>`;
          } else {
            htmlBody += `<p style="margin:4px 0;font-size:10.5pt;line-height:1.6;color:#334155;">${trimmed}</p>`;
          }
@@ -114,38 +126,44 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
          </div>
        `; 
     } else if (selectedTemplate === 'executive') {
-       // Executive bold corporate layout
        htmlBody = `
          <div style="border-top: 6px solid #1f2937; padding-top: 30px; margin-bottom: 30px;">
            <h1 style="font-size: 32pt; text-align: center; margin-bottom: 8px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; color: #111;">${name}</h1>
-           <p style="text-align: center; font-size: 11pt; color: #4b5563; font-weight: 500;">${lines[1] ?? ''}</p>
+           <p style="text-align: center; font-size: 11pt; color: #4b5563; font-weight: 500;">${contactLine}</p>
          </div>
        `;
-       for (let i = 2; i < lines.length; i++) {
+       for (let i = 0; i < lines.length; i++) {
          const trimmed = lines[i].trim();
-         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+         if (!trimmed) {
+           htmlBody += `<div style="height: 12px;"></div>`;
+         } else if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
            htmlBody += `
              <div style="display: flex; align-items: center; margin: 25px 0 12px 0;">
                <h2 style="font-size: 12pt; text-transform: uppercase; letter-spacing: 1.5px; color: #111; font-weight: 800; margin-right: 15px; white-space: nowrap;">${trimmed}</h2>
                <div style="flex: 1; height: 2px; background: #e5e7eb;"></div>
              </div>
            `;
+         } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+           htmlBody += `<p style="margin:5px 0;font-size:10.5pt;line-height:1.6;color:#1f2937;padding-left:16px;text-indent:-8px;">${trimmed}</p>`;
          } else {
            htmlBody += `<p style="margin:5px 0;font-size:10.5pt;line-height:1.6;color:#1f2937;">${trimmed}</p>`;
          }
        }
     } else {
-       // Classic centered academic/professional
        htmlBody = `
          <div style="text-align: center; margin-bottom: 24px;">
            <h1 style="font-size: 28pt; margin-bottom: 4px; font-weight: normal; letter-spacing: 1px;">${name}</h1>
-           <p style="font-size: 11pt; color: #555;">${lines[1] ?? 'Contact Information'}</p>
+           <p style="font-size: 11pt; color: #555;">${contactLine}</p>
          </div>
        `;
-       for (let i = 2; i < lines.length; i++) {
+       for (let i = 0; i < lines.length; i++) {
          const trimmed = lines[i].trim();
-         if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+         if (!trimmed) {
+           htmlBody += `<div style="height: 12px;"></div>`;
+         } else if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
            htmlBody += `<h2 style="font-size:12pt;text-transform:uppercase;letter-spacing:1px;color:#111;border-bottom:1px solid #ccc;padding-bottom:2px;margin:20px 0 8px 0;font-weight:bold;">${trimmed}</h2>`;
+         } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+           htmlBody += `<p style="margin:3px 0;font-size:10.5pt;line-height:1.5;color:#222;padding-left:16px;text-indent:-8px;">${trimmed}</p>`;
          } else {
            htmlBody += `<p style="margin:3px 0;font-size:10.5pt;line-height:1.5;color:#222;">${trimmed}</p>`;
          }
@@ -264,10 +282,16 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                   {/* Dynamic formatted resume preview */}
                   <div className="border border-[var(--color-dark-border)] rounded-2xl overflow-hidden bg-white shadow-inner">
                     {(() => {
-                      const lines = content.split('\n').filter(l => l.trim());
-                      const name = lines[0] || 'Your Name';
-                      const contact = lines[1] || 'Your Contact Info';
-                      const contentLines = lines.slice(2);
+                      const rawLines = content.split('\n');
+                      let firstContentIdx = 0;
+                      while(firstContentIdx < rawLines.length && !rawLines[firstContentIdx].trim()) firstContentIdx++;
+                      const name = rawLines[firstContentIdx]?.trim() || 'Your Name';
+                      
+                      let contactIdx = firstContentIdx + 1;
+                      while(contactIdx < rawLines.length && !rawLines[contactIdx].trim()) contactIdx++;
+                      const contact = rawLines[contactIdx]?.trim() || 'Your Contact Info';
+
+                      const contentLines = rawLines.slice(contactIdx + 1);
 
                       if (selectedTemplate === 'modern') {
                         return (
@@ -281,10 +305,12 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                             <div className="w-2/3 p-6 md:p-8">
                               {contentLines.map((line, i) => {
                                 const trimmed = line.trim();
+                                if (!trimmed) return <div key={i} className="h-3" />;
                                 if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
                                   return <h2 key={i} className="text-xs uppercase tracking-widest text-rose-600 border-b-2 border-slate-100 pb-1 mt-6 mb-3 font-bold">{trimmed}</h2>;
                                 }
-                                return <p key={i} className="my-1.5 text-sm leading-relaxed text-slate-700">{trimmed}</p>;
+                                const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('• ');
+                                return <p key={i} className={cn("my-1.5 text-sm leading-relaxed text-slate-700", isBullet && "pl-4 -indent-2")}>{trimmed}</p>;
                               })}
                             </div>
                           </div>
@@ -300,6 +326,7 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                             </div>
                             {contentLines.map((line, i) => {
                               const trimmed = line.trim();
+                              if (!trimmed) return <div key={i} className="h-3" />;
                               if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
                                 return (
                                   <div key={i} className="flex items-center mt-8 mb-4">
@@ -308,7 +335,8 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                                   </div>
                                 );
                               }
-                              return <p key={i} className="my-1.5 text-sm leading-relaxed text-gray-800">{trimmed}</p>;
+                              const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('• ');
+                              return <p key={i} className={cn("my-1.5 text-sm leading-relaxed text-gray-800", isBullet && "pl-4 -indent-2")}>{trimmed}</p>;
                             })}
                           </div>
                         );
@@ -323,10 +351,12 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
                           </div>
                           {contentLines.map((line, i) => {
                             const trimmed = line.trim();
+                            if (!trimmed) return <div key={i} className="h-3" />;
                             if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
                               return <h2 key={i} className="text-sm uppercase tracking-widest border-b border-gray-300 pb-1 mt-6 mb-3 font-bold text-black">{trimmed}</h2>;
                             }
-                            return <p key={i} className="my-1.5 text-sm leading-relaxed text-gray-800">{trimmed}</p>;
+                            const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('• ');
+                            return <p key={i} className={cn("my-1.5 text-sm leading-relaxed text-gray-800", isBullet && "pl-4 -indent-2")}>{trimmed}</p>;
                           })}
                         </div>
                       );
