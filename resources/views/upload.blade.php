@@ -20,10 +20,11 @@
                     home: "{{ route('home') }}",
                     improve: "/api/resume/improve",
                     login: "{{ route('login') }}",
-                    register: "{{ route('register') }}"
+                    register: "{{ route('register') }}",
+                    updateTier: "/api/user/tier"
                 },
                 isAuthenticated: {{ auth()->check() ? 'true' : 'false' }},
-                user: @json(auth()->check() ? ['name' => auth()->user()->name, 'avatar' => auth()->user()->avatar] : null),
+                user: @json(auth()->check() ? ['name' => auth()->user()->name, 'avatar' => auth()->user()->avatar, 'tier' => auth()->user()->tier ?? 'none'] : null),
                 fieldsOfWork: @json($fields)
             };
         </script>

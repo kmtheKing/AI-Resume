@@ -23,6 +23,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::post('/api/user/tier', function (\Illuminate\Http\Request $request) {
+        $request->validate(['tier' => 'required|string|in:none,starter,pro,elite']);
+        $request->user()->update(['tier' => $request->tier]);
+        return response()->json(['status' => 'success', 'tier' => $request->tier]);
+    })->name('user.tier');
+
     Route::resource('admin/fields', FieldOfWorkController::class);
 });
 

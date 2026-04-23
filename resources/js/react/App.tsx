@@ -175,7 +175,12 @@ export default function App() {
   const [state, setState] = useState<AppState>('upload');
   const [resumeText, setResumeText] = useState('');
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const AppConfig = (window as any).AppConfig;
   const [tier, setTier] = useState<PlanTier>(() => {
+    // Priority: Database (AppConfig) -> LocalStorage -> 'none'
+    if (AppConfig?.user?.tier && AppConfig.user.tier !== 'none') {
+      return AppConfig.user.tier as PlanTier;
+    }
     return (localStorage.getItem('ai_resume_tier') as PlanTier) || 'none';
   });
   const [previousState, setPreviousState] = useState<AppState>('upload');
@@ -229,8 +234,25 @@ export default function App() {
     setState('payment');
   };
 
-  const handlePaymentComplete = (completedTier: 'starter' | 'pro' | 'elite') => {
+  const handlePaymentComplete = async (completedTier: 'starter' | 'pro' | 'elite') => {
     setTier(completedTier);
+    
+    // Save to backend if authenticated
+    if (AppConfig?.isAuthenticated && AppConfig?.routes?.updateTier) {
+      try {
+        await fetch(AppConfig.routes.updateTier, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': AppConfig.csrfToken
+          },
+          body: JSON.stringify({ tier: completedTier })
+        });
+      } catch (e) {
+        console.error('Failed to sync tier to backend', e);
+      }
+    }
+
     setState(previousState);
   };
 
