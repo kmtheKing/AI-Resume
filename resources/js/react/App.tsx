@@ -12,10 +12,11 @@ import { PricingPage } from './components/PricingPage';
 import { PaymentForm } from './components/PaymentForm';
 import { PaymentSuccess } from './components/PaymentSuccess';
 import { analyzeResume, ResumeAnalysis } from './services/gemini';
-import { Sparkles, ArrowLeft, FileText, Target, Zap } from 'lucide-react';
+import { Sparkles, ArrowLeft, FileText, Target, Zap, BookOpen, CheckCircle, Lock, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-type AppState = 'upload' | 'analyzing' | 'results' | 'editor' | 'pricing' | 'payment' | 'success';
+type AppState = 'upload' | 'analyzing' | 'results' | 'editor' | 'pricing' | 'payment' | 'success' | 'interview';
+type PlanTier = 'none' | 'starter' | 'pro' | 'elite';
 
 /* Scroll-reveal hook */
 function useScrollReveal() {
@@ -46,37 +47,183 @@ function useScrollReveal() {
   return ref;
 }
 
+/* Interview Prep Module */
+function InterviewPrepModule({ field, onBack }: { field: string; onBack: () => void }) {
+  const questions = [
+    { category: 'Behavioral', q: 'Tell me about a time you faced a significant challenge. How did you overcome it?' },
+    { category: 'Behavioral', q: 'Describe a situation where you had to work with a difficult team member.' },
+    { category: 'Technical', q: `What are the most important skills for a ${field || 'professional'} in today's market?` },
+    { category: 'Technical', q: 'Walk me through your most complex project and the decisions you made.' },
+    { category: 'Situational', q: 'How would you prioritize multiple urgent tasks with tight deadlines?' },
+    { category: 'Situational', q: 'If you discovered a major error in a deliverable close to deadline, what would you do?' },
+    { category: 'Career', q: 'Where do you see yourself in 5 years within this industry?' },
+    { category: 'Career', q: 'Why are you the best candidate for this specific role?' },
+  ];
+
+  const tips = [
+    { title: 'Use STAR Method', desc: 'Situation → Task → Action → Result. Structure every behavioral answer this way.' },
+    { title: 'Quantify Impact', desc: 'Mention numbers: "Reduced costs by 20%", "Led a team of 8", "Improved speed by 3x".' },
+    { title: 'Research the Company', desc: 'Know their mission, recent news, and competitors. Reference them naturally.' },
+    { title: 'Ask Smart Questions', desc: 'Prepare 3–5 thoughtful questions about the role, team culture, and growth paths.' },
+  ];
+
+  const categoryColors: Record<string, string> = {
+    Behavioral: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    Technical:  'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    Situational:'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    Career:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <button onClick={onBack} className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Back to Editor
+        </button>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-bold">
+          <BookOpen className="h-4 w-4" /> Elite Feature — Interview Prep
+        </div>
+      </div>
+
+      <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold font-display text-[var(--color-text-primary)]">Interview Preparation</h2>
+        <p className="text-[var(--color-text-secondary)]">Tailored question bank and strategies for your field: <strong className="text-[var(--color-text-primary)]">{field || 'General Professional'}</strong></p>
+      </div>
+
+      {/* Tips */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {tips.map((tip, i) => (
+          <div key={i} className="glass-card rounded-2xl p-5 space-y-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+              <h4 className="font-bold text-[var(--color-text-primary)]">{tip.title}</h4>
+            </div>
+            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed pl-6">{tip.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Questions */}
+      <div className="bg-[var(--color-dark-card)] border border-[var(--color-dark-border)] rounded-3xl p-6 md:p-8">
+        <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-6">Common Interview Questions</h3>
+        <div className="space-y-4">
+          {questions.map((item, i) => (
+            <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] hover:border-[var(--color-accent)]/30 transition-colors">
+              <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full border ${categoryColors[item.category]}`}>
+                {item.category}
+              </span>
+              <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed">{item.q}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Salary Tips */}
+      <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-3xl p-6 md:p-8">
+        <h3 className="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
+          <Star className="h-5 w-5" /> Salary Negotiation Tips
+        </h3>
+        <ul className="space-y-3 text-sm text-[var(--color-text-secondary)]">
+          <li className="flex gap-3"><span className="text-amber-400 font-bold shrink-0">→</span> Always let the employer name a number first. Silence is your ally.</li>
+          <li className="flex gap-3"><span className="text-amber-400 font-bold shrink-0">→</span> Anchor high (10–15% above your target) and justify with market data.</li>
+          <li className="flex gap-3"><span className="text-amber-400 font-bold shrink-0">→</span> Negotiate total comp: base, equity, bonuses, PTO, remote flexibility.</li>
+          <li className="flex gap-3"><span className="text-amber-400 font-bold shrink-0">→</span> Never accept on the spot. Ask for 24–48 hours to review the offer.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* Landing page pricing section (simplified) */
+function LandingPricingSection({ onUpgrade }: { onUpgrade: () => void }) {
+  const plans = [
+    { name: 'Starter', price: '$2', desc: 'Resume Score + ATS Check', color: 'border-emerald-500/30', badge: null },
+    { name: 'Pro', price: '$5', desc: 'Unlimited Resumes + 3 Premium Templates', color: 'border-[#818cf8]', badge: 'Popular' },
+    { name: 'Elite', price: '$7', desc: 'Everything + Interview Prep Module', color: 'border-amber-500/30', badge: null },
+  ];
+  return (
+    <section id="pricing" className="scroll-reveal py-20 bg-[var(--color-dark-surface)] rounded-[2rem] text-white px-6 md:px-16 border border-[var(--color-dark-border)]">
+      <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
+        <h2 className="text-3xl font-bold font-display text-[var(--color-text-primary)]">Simple, transparent pricing</h2>
+        <p className="text-[var(--color-text-muted)] text-lg">One-time payments. No subscriptions. No surprises.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 stagger-children">
+        {plans.map((p, i) => (
+          <div key={i} className={`rounded-3xl bg-[var(--color-dark-card)] p-7 border flex flex-col hover-lift relative ${p.color}`}>
+            {p.badge && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#a78bfa] text-[var(--color-dark-bg)] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                {p.badge}
+              </div>
+            )}
+            <div className="text-4xl font-display font-bold text-[var(--color-text-primary)] mb-2">{p.price}</div>
+            <div className="text-lg font-bold text-[var(--color-text-primary)] mb-2">{p.name}</div>
+            <p className="text-sm text-[var(--color-text-muted)] mb-6 flex-1">{p.desc}</p>
+            <button
+              onClick={onUpgrade}
+              className="w-full py-3 rounded-full bg-[var(--color-dark-hover)] border border-[var(--color-dark-border)] font-bold hover:bg-[var(--color-accent)] hover:border-[var(--color-accent)] hover:text-white transition-all text-[var(--color-text-primary)] text-sm"
+            >
+              Get {p.name}
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [state, setState] = useState<AppState>('upload');
   const [resumeText, setResumeText] = useState('');
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
-  const [isPremium, setIsPremium] = useState(false);
+  const [tier, setTier] = useState<PlanTier>('none');
+  const [selectedTierForPayment, setSelectedTierForPayment] = useState<'starter' | 'pro' | 'elite'>('pro');
+  const [resumeField, setResumeField] = useState('');
   const scrollRef = useScrollReveal();
+
+  const isPremium = tier === 'pro' || tier === 'elite';
+  const hasInterviewPrep = tier === 'elite';
 
   const handleUpload = async (file: File, field: string) => {
     setState('analyzing');
+    setResumeField(field);
     try {
       const responsePayload = await analyzeResume(file, field);
       setAnalysis(responsePayload.result);
       setResumeText(responsePayload.parsedText);
       setState('results');
     } catch (error: any) {
-      console.error("Analysis failed:", error);
+      console.error('Analysis failed:', error);
       setState('upload');
-      alert(error.message || "Failed to analyze resume. Please try again.");
+      alert(error.message || 'Failed to analyze resume. Please try again.');
     }
   };
+
+  const handleSelectPlan = (planTier: 'starter' | 'pro' | 'elite') => {
+    setSelectedTierForPayment(planTier);
+    setState('payment');
+  };
+
+  const handlePaymentComplete = (completedTier: 'starter' | 'pro' | 'elite') => {
+    setTier(completedTier);
+    setState('success');
+  };
+
+  const templates = [
+    { name: 'Classic Professional', desc: 'Clean, traditional layout perfect for corporate and finance roles.', image: '/assets/template-classic.png', tier: 'Free' },
+    { name: 'Modern Minimalist', desc: 'Sleek sidebar design for tech, design, and marketing.', image: '/assets/template-modern.png', tier: 'Pro' },
+    { name: 'Executive Pro', desc: 'Powerful, authoritative layout for senior and leadership roles.', image: '/assets/template-executive.png', tier: 'Pro' },
+  ];
 
   return (
     <div className="min-h-screen bg-[var(--color-dark-bg)]">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
         <AnimatePresence mode="wait">
-          
+
           {/* LANDING PAGE */}
           {state === 'upload' && (
-            <motion.div 
+            <motion.div
               key="upload"
               ref={scrollRef}
               initial={{ opacity: 0, y: 20 }}
@@ -84,30 +231,30 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-20"
             >
-              <div className="text-center space-y-6 max-w-3xl mx-auto">
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-display leading-[1.1] text-[var(--color-text-primary)]">
-                  Land your dream job with <span className="gradient-text">ResumeAI</span>
+              <div className="text-center space-y-6 max-w-3xl mx-auto px-2">
+                <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight font-display leading-[1.1] text-[var(--color-text-primary)]">
+                  Land your dream job with <span className="gradient-text">Resume Analyzer</span>
                 </h1>
-                <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed">
+                <p className="text-lg sm:text-xl text-[var(--color-text-secondary)] leading-relaxed">
                   Upload your resume and get instant AI-powered feedback, scoring, and professional improvement suggestions in seconds.
                 </p>
               </div>
-              
+
               <ResumeUpload onUpload={handleUpload} isAnalyzing={false} />
-              
+
               {/* HOW IT WORKS */}
-              <section id="how-it-works" className="scroll-reveal py-20 bg-[var(--color-dark-surface)] rounded-[2rem] border border-[var(--color-dark-border)] flex flex-col items-center justify-center p-8 md:p-12">
-                <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+              <section id="how-it-works" className="scroll-reveal py-16 md:py-20 bg-[var(--color-dark-surface)] rounded-[2rem] border border-[var(--color-dark-border)] flex flex-col items-center justify-center p-6 md:p-12">
+                <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
                   <h2 className="text-3xl font-bold text-[var(--color-text-primary)] font-display">How it works</h2>
                   <p className="text-[var(--color-text-secondary)] text-lg">Your path to a perfect resume in 3 simple steps.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full stagger-children">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 w-full stagger-children">
                   {[
-                    { icon: FileText, title: "1. Upload Resume", desc: "Drag and drop your existing PDF, DOCX, or TXT file into our secure analyzer." },
-                    { icon: Target, title: "2. Select Industry", desc: "Choose your target field of work so the AI knows exactly what recruiters look for." },
-                    { icon: Zap, title: "3. AI Optimization", desc: "Get an instant score, detailed breakdown, and interactive rewrite suggestions." }
+                    { icon: FileText, title: '1. Upload Resume', desc: 'Drag and drop your existing PDF, DOCX, or TXT file into our secure analyzer.' },
+                    { icon: Target, title: '2. Select Industry', desc: 'Choose your target field of work so the AI knows exactly what recruiters look for.' },
+                    { icon: Zap, title: '3. AI Optimization', desc: 'Get an instant score, detailed breakdown, and interactive rewrite suggestions.' },
                   ].map((feature, i) => (
-                    <div key={i} className="glass-card rounded-2xl p-8 space-y-4 relative overflow-hidden group hover-lift cursor-default">
+                    <div key={i} className="glass-card rounded-2xl p-6 md:p-8 space-y-4 relative overflow-hidden group hover-lift cursor-default">
                       <div className="h-14 w-14 rounded-xl bg-[var(--color-accent-glow)] flex items-center justify-center text-[var(--color-accent)] mb-4">
                         <feature.icon className="h-7 w-7" />
                       </div>
@@ -119,22 +266,23 @@ export default function App() {
               </section>
 
               {/* TEMPLATES */}
-              <section id="templates" className="scroll-reveal py-20">
-                <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+              <section id="templates" className="scroll-reveal py-16 md:py-20">
+                <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
                   <h2 className="text-3xl font-bold text-[var(--color-text-primary)] font-display">Professional Templates</h2>
                   <p className="text-[var(--color-text-secondary)] text-lg">Start fresh with our ATS-optimized resume layouts designed for impact.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
-                  {[
-                    { name: "Classic Professional", desc: "Clean, traditional layout perfect for corporate and finance roles.", image: "/assets/template-classic.png" },
-                    { name: "Modern Minimalist", desc: "Modern, slightly colorful design for tech, design, and marketing.", image: "/assets/template-modern.png" },
-                    { name: "Executive Pro", desc: "The ultimate ATS parser friendly layout. Functional and direct.", image: "/assets/template-executive.png" }
-                  ].map((tpl, i) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 stagger-children">
+                  {templates.map((tpl, i) => (
                     <div key={i} className="group relative rounded-2xl border border-[var(--color-dark-border)] bg-[var(--color-dark-card)] p-2 hover:border-[var(--color-accent)]/40 hover:shadow-xl hover:shadow-[var(--color-accent-glow)] transition-all duration-300 cursor-pointer hover-lift">
-                      <div className="w-full aspect-[1/1.4] rounded-xl overflow-hidden mb-4 border border-[var(--color-dark-border)] group-hover:border-[var(--color-accent)]/40 transition-all">
-                        <img src={tpl.image} alt={tpl.name} className="w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity" />
+                      <div className="w-full aspect-[1/1.4] rounded-xl overflow-hidden mb-4 border border-[var(--color-dark-border)] group-hover:border-[var(--color-accent)]/40 transition-all relative">
+                        <img src={tpl.image} alt={tpl.name} className="w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" />
+                        {tpl.tier !== 'Free' && (
+                          <div className="absolute top-2 right-2 flex items-center gap-1 bg-[var(--color-accent)] text-white text-xs font-bold px-2 py-1 rounded-full">
+                            <Lock className="h-3 w-3" /> {tpl.tier}
+                          </div>
+                        )}
                       </div>
-                      <div className="px-4 pb-4 space-y-2">
+                      <div className="px-3 pb-4 space-y-2">
                         <h3 className="font-bold text-[var(--color-text-primary)]">{tpl.name}</h3>
                         <p className="text-sm text-[var(--color-text-muted)]">{tpl.desc}</p>
                         <button className="text-sm font-bold text-[var(--color-accent)] mt-2 hover:underline">Preview Layout →</button>
@@ -145,55 +293,14 @@ export default function App() {
               </section>
 
               {/* PRICING */}
-              <section id="pricing" className="scroll-reveal py-20 bg-[var(--color-dark-surface)] rounded-[2rem] text-white px-8 md:px-16 border border-[var(--color-dark-border)]">
-                <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
-                  <h2 className="text-3xl font-bold font-display text-[var(--color-text-primary)]">Simple, transparent pricing</h2>
-                  <p className="text-[var(--color-text-muted)] text-lg">Choose the perfect plan to accelerate your career.</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
-                  <div className="rounded-3xl bg-[var(--color-dark-card)] p-8 border border-[var(--color-dark-border)] flex flex-col hover-lift">
-                    <h3 className="font-bold text-2xl mb-2 text-[var(--color-text-primary)]">Free</h3>
-                    <div className="text-4xl font-display font-bold mb-6 text-[var(--color-text-primary)]">$0<span className="text-lg text-[var(--color-text-muted)] font-normal">/mo</span></div>
-                    <ul className="space-y-4 mb-8 flex-1 text-[var(--color-text-secondary)]">
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> Basic AI Analysis</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> 1 ATS Score Check</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> Export PDF</li>
-                    </ul>
-                    <button className="w-full py-3 rounded-full bg-[var(--color-dark-hover)] border border-[var(--color-dark-border)] font-bold hover:bg-[var(--color-dark-border)] transition-colors text-[var(--color-text-primary)]">Get Started</button>
-                  </div>
-                  
-                  <div className="rounded-3xl bg-[var(--color-accent)] p-8 border border-[#818cf8] shadow-2xl shadow-[var(--color-accent-glow)] flex flex-col relative transform md:-translate-y-4 hover-lift">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#a78bfa] text-[var(--color-dark-bg)] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Most Popular</div>
-                    <h3 className="font-bold text-2xl mb-2">Pro</h3>
-                    <div className="text-4xl font-display font-bold mb-6">$15<span className="text-lg text-indigo-200 font-normal">/mo</span></div>
-                    <ul className="space-y-4 mb-8 flex-1 text-indigo-100">
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-white" /> Advanced Analysis</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-white" /> Interactive AI Editor</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-white" /> Unlimited Checks</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-white" /> All Templates</li>
-                    </ul>
-                    <button className="w-full py-3 rounded-full bg-white text-[var(--color-accent-muted)] font-bold hover:bg-indigo-50 transition-colors">Upgrade to Pro</button>
-                  </div>
-
-                  <div className="rounded-3xl bg-[var(--color-dark-card)] p-8 border border-[var(--color-dark-border)] flex flex-col hover-lift">
-                    <h3 className="font-bold text-2xl mb-2 text-[var(--color-text-primary)]">Enterprise</h3>
-                    <div className="text-4xl font-display font-bold mb-6 text-[var(--color-text-primary)]">$49<span className="text-lg text-[var(--color-text-muted)] font-normal">/mo</span></div>
-                    <ul className="space-y-4 mb-8 flex-1 text-[var(--color-text-secondary)]">
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> Everything in Pro</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> Career Coaching Tools</li>
-                      <li className="flex items-center gap-3"><Sparkles className="h-4 w-4 text-[var(--color-accent)]" /> Custom System Branding</li>
-                    </ul>
-                    <button className="w-full py-3 rounded-full bg-[var(--color-dark-hover)] border border-[var(--color-dark-border)] font-bold hover:bg-[var(--color-dark-border)] transition-colors text-[var(--color-text-primary)]">Contact Sales</button>
-                  </div>
-                </div>
-              </section>
+              <LandingPricingSection onUpgrade={() => setState('pricing')} />
 
             </motion.div>
           )}
 
           {/* ANALYZING SPINNER */}
           {state === 'analyzing' && (
-            <motion.div 
+            <motion.div
               key="analyzing"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -213,17 +320,17 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* STAGE 1: RESULTS — Summary + Score only */}
+          {/* RESULTS */}
           {state === 'results' && analysis && (
-            <motion.div 
+            <motion.div
               key="results"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-8"
             >
-              <div className="flex items-center justify-between">
-                <button 
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <button
                   onClick={() => setState('upload')}
                   className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
@@ -231,91 +338,111 @@ export default function App() {
                 </button>
                 <div className="text-sm font-medium text-[var(--color-text-muted)]">Analysis Complete</div>
               </div>
-              
-              <AnalysisDashboard 
-                analysis={analysis} 
-                onContinue={() => setState('editor')} 
+
+              <AnalysisDashboard
+                analysis={analysis}
+                onContinue={() => setState('editor')}
               />
             </motion.div>
           )}
 
-          {/* STAGE 2+3: EDITOR with Big Suggestions + Premium Preview */}
+          {/* EDITOR */}
           {state === 'editor' && (
-            <motion.div 
+            <motion.div
               key="editor"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="space-y-8"
             >
-              <div className="flex items-center justify-between">
-                <button 
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <button
                   onClick={() => setState('results')}
                   className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
                   <ArrowLeft className="h-4 w-4" /> Back to Dashboard
                 </button>
-                <h2 className="text-xl font-bold text-[var(--color-text-primary)] font-display">AI Resume Editor</h2>
+                <div className="flex items-center gap-3">
+                  {hasInterviewPrep && (
+                    <button
+                      onClick={() => setState('interview')}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-bold hover:bg-amber-500/20 transition-all"
+                    >
+                      <BookOpen className="h-4 w-4" /> Interview Prep
+                    </button>
+                  )}
+                  <h2 className="text-xl font-bold text-[var(--color-text-primary)] font-display">AI Resume Editor</h2>
+                </div>
               </div>
-              
-              <ResumeEditor 
-                initialContent={resumeText} 
+
+              <ResumeEditor
+                initialContent={resumeText}
                 isPremium={isPremium}
                 onPricingClick={() => setState('pricing')}
               />
             </motion.div>
           )}
 
-          {/* STAGE 4a: PRICING PAGE */}
+          {/* INTERVIEW PREP */}
+          {state === 'interview' && (
+            <motion.div
+              key="interview"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <InterviewPrepModule field={resumeField} onBack={() => setState('editor')} />
+            </motion.div>
+          )}
+
+          {/* PRICING PAGE */}
           {state === 'pricing' && (
-            <motion.div 
+            <motion.div
               key="pricing"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               className="space-y-8"
             >
-              <button 
-                onClick={() => setState('editor')}
+              <button
+                onClick={() => setState(analysis ? 'editor' : 'upload')}
                 className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
               >
-                <ArrowLeft className="h-4 w-4" /> Back to Editor
+                <ArrowLeft className="h-4 w-4" /> Back
               </button>
-              
-              <PricingPage 
-                onSelectPro={() => setState('payment')}
-                onBack={() => setState('editor')}
+
+              <PricingPage
+                onSelectPlan={handleSelectPlan}
+                onBack={() => setState(analysis ? 'editor' : 'upload')}
               />
             </motion.div>
           )}
 
-          {/* STAGE 4b: DUMMY PAYMENT */}
+          {/* PAYMENT */}
           {state === 'payment' && (
-            <motion.div 
+            <motion.div
               key="payment"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <PaymentForm 
-                onComplete={() => {
-                  setIsPremium(true);
-                  setState('success');
-                }}
+              <PaymentForm
+                onComplete={handlePaymentComplete}
                 onBack={() => setState('pricing')}
+                selectedTier={selectedTierForPayment}
               />
             </motion.div>
           )}
 
-          {/* STAGE 5: SUCCESS */}
+          {/* SUCCESS */}
           {state === 'success' && (
-            <motion.div 
+            <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
             >
-              <PaymentSuccess onReturn={() => setState('editor')} />
+              <PaymentSuccess onReturn={() => setState(tier === 'elite' ? 'interview' : 'editor')} />
             </motion.div>
           )}
 

@@ -1,21 +1,31 @@
 import { useState } from 'react';
-import { CreditCard, Lock, AlertTriangle } from 'lucide-react';
+import { CreditCard, Lock, AlertTriangle, Star, Crown, BookOpen } from 'lucide-react';
+
+type PlanTier = 'starter' | 'pro' | 'elite';
 
 interface PaymentFormProps {
-  onComplete: () => void;
+  onComplete: (tier: PlanTier) => void;
   onBack: () => void;
+  selectedTier?: PlanTier;
 }
 
-export function PaymentForm({ onComplete, onBack }: PaymentFormProps) {
+const PLAN_DETAILS: Record<PlanTier, { name: string; price: string; icon: React.ElementType; color: string }> = {
+  starter: { name: 'Starter Plan', price: '$2.00', icon: Star, color: 'text-emerald-400' },
+  pro:     { name: 'Pro Plan',     price: '$5.00', icon: Crown, color: 'text-[var(--color-accent)]' },
+  elite:   { name: 'Elite Plan',  price: '$7.00', icon: BookOpen, color: 'text-amber-400' },
+};
+
+export function PaymentForm({ onComplete, onBack, selectedTier = 'pro' }: PaymentFormProps) {
   const [processing, setProcessing] = useState(false);
+  const plan = PLAN_DETAILS[selectedTier];
+  const PlanIcon = plan.icon;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setProcessing(true);
-    // Simulate payment processing
     setTimeout(() => {
       setProcessing(false);
-      onComplete();
+      onComplete(selectedTier);
     }, 2000);
   };
 
@@ -27,14 +37,14 @@ export function PaymentForm({ onComplete, onBack }: PaymentFormProps) {
         <p className="text-sm font-medium">This is a <strong>TEST PAYMENT</strong> — no real charges will occur.</p>
       </div>
 
-      <div className="rounded-3xl bg-[var(--color-dark-card)] border border-amber-500/30 p-10 shadow-2xl">
+      <div className="rounded-3xl bg-[var(--color-dark-card)] border border-amber-500/30 p-8 md:p-10 shadow-2xl">
         <div className="flex items-center gap-3 mb-8">
           <div className="h-12 w-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-            <CreditCard className="h-6 w-6 text-amber-400" />
+            <PlanIcon className={`h-6 w-6 ${plan.color}`} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[var(--color-text-primary)] font-display">Pro Upgrade</h2>
-            <p className="text-sm text-[var(--color-text-muted)]">$15.00/month</p>
+            <h2 className="text-xl font-bold text-[var(--color-text-primary)] font-display">{plan.name}</h2>
+            <p className="text-sm text-[var(--color-text-muted)]">{plan.price} one-time</p>
           </div>
         </div>
 
@@ -43,7 +53,7 @@ export function PaymentForm({ onComplete, onBack }: PaymentFormProps) {
             <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Cardholder Name</label>
             <input
               type="text"
-              defaultValue="Moayed Elshafia"
+              placeholder="Your Name"
               className="w-full px-4 py-3 rounded-xl bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-amber-500 focus:outline-none transition-colors"
             />
           </div>
@@ -51,24 +61,24 @@ export function PaymentForm({ onComplete, onBack }: PaymentFormProps) {
             <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Card Number</label>
             <input
               type="text"
-              defaultValue="4242 4242 4242 4242"
+              placeholder="4242 4242 4242 4242"
               className="w-full px-4 py-3 rounded-xl bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-amber-500 focus:outline-none transition-colors font-mono"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">CVC</label>
+              <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Expiry</label>
               <input
                 type="text"
-                defaultValue="123"
+                placeholder="MM/YY"
                 className="w-full px-4 py-3 rounded-xl bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-amber-500 focus:outline-none transition-colors font-mono"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Zip Code</label>
+              <label className="block text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">CVC</label>
               <input
                 type="text"
-                defaultValue="90210"
+                placeholder="123"
                 className="w-full px-4 py-3 rounded-xl bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-amber-500 focus:outline-none transition-colors font-mono"
               />
             </div>
@@ -88,7 +98,7 @@ export function PaymentForm({ onComplete, onBack }: PaymentFormProps) {
               ) : (
                 <>
                   <Lock className="h-4 w-4" />
-                  Confirm & Complete (Dummy Payment - TEST ONLY)
+                  Pay {plan.price} — TEST ONLY
                 </>
               )}
             </button>

@@ -4,7 +4,7 @@
     "name": "chunk"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DKLsCPDn.css",
+    "file": "assets/app-F19z-VzW.css",
     "name": "app",
     "names": [
       "app.css"
@@ -22,7 +22,7 @@
     ]
   },
   "resources/js/react/index.css": {
-    "file": "assets/index-cezYM4_d.css",
+    "file": "assets/index-DMl0IbJB.css",
     "name": "index",
     "names": [
       "index.css"
@@ -31,7 +31,7 @@
     "isEntry": true
   },
   "resources/js/react/main.tsx": {
-    "file": "assets/main-kTx5Hg3c.js",
+    "file": "assets/main-BA6u1cQP.js",
     "name": "main",
     "src": "resources/js/react/main.tsx",
     "isEntry": true,
@@ -39,7 +39,7 @@
       "_chunk-DirA_cbD.js"
     ],
     "css": [
-      "assets/index-cezYM4_d.css"
+      "assets/index-DMl0IbJB.css"
     ]
   }
 }
