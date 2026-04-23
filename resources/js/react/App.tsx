@@ -137,8 +137,8 @@ function InterviewPrepModule({ field, onBack }: { field: string; onBack: () => v
 /* Landing page pricing section (simplified) */
 function LandingPricingSection({ onUpgrade }: { onUpgrade: () => void }) {
   const plans = [
-    { name: 'Starter', price: '$2', desc: 'Resume Score + ATS Check', color: 'border-emerald-500/30', badge: null },
-    { name: 'Pro', price: '$5', desc: 'Unlimited Resumes + 3 Premium Templates', color: 'border-[#818cf8]', badge: 'Popular' },
+    { name: 'Starter', price: '$2', desc: 'Resume Score + ATS Check', color: 'border-[var(--color-dark-border)]', badge: null },
+    { name: 'Pro', price: '$5', desc: 'Unlimited Resumes + 3 Premium Templates', color: 'border-[var(--color-accent)]', badge: 'Popular' },
     { name: 'Elite', price: '$7', desc: 'Everything + Interview Prep Module', color: 'border-amber-500/30', badge: null },
   ];
   return (
@@ -151,7 +151,7 @@ function LandingPricingSection({ onUpgrade }: { onUpgrade: () => void }) {
         {plans.map((p, i) => (
           <div key={i} className={`rounded-3xl bg-[var(--color-dark-card)] p-7 border flex flex-col hover-lift relative ${p.color}`}>
             {p.badge && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#a78bfa] text-[var(--color-dark-bg)] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-accent)] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                 {p.badge}
               </div>
             )}
@@ -216,7 +216,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--color-dark-bg)]">
-      <Header />
+      <Header tier={tier} />
 
       <main className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
         <AnimatePresence mode="wait">

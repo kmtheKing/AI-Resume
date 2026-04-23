@@ -564,10 +564,10 @@ export function ResumeEditor({ initialContent, analysis, isPremium, onPricingCli
           className={cn(
             "group flex items-center gap-3 px-12 py-5 rounded-2xl text-white font-bold text-xl transition-all duration-300",
             isAutoImproving 
-              ? "bg-gray-700 cursor-not-allowed opacity-80" 
+              ? "bg-[var(--color-dark-border)] cursor-not-allowed opacity-80" 
               : !isPremium 
-                ? "bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a78bfa] hover:shadow-2xl hover:shadow-purple-500/30 hover:scale-[1.03] active:scale-[0.98]"
-                : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:shadow-2xl hover:shadow-emerald-500/30 hover:scale-[1.03] active:scale-[0.98]"
+                ? "bg-gradient-to-r from-[var(--color-accent)] to-rose-500 hover:shadow-2xl hover:shadow-[var(--color-accent-glow)] hover:scale-[1.03] active:scale-[0.98]"
+                : "bg-gradient-to-r from-amber-500 to-orange-500 hover:shadow-2xl hover:shadow-orange-500/30 hover:scale-[1.03] active:scale-[0.98] text-white"
           )}
         >
           {isAutoImproving ? <Loader2 className="h-6 w-6 animate-spin" /> : !isPremium ? <Crown className="h-6 w-6 group-hover:rotate-12 transition-transform" /> : <Sparkles className="h-6 w-6 group-hover:scale-125 transition-transform" />}

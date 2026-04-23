@@ -14,8 +14,8 @@ export function PricingPage({ onSelectPlan, onBack }: PricingPageProps) {
       period: '/one-time',
       tagline: 'Get your score. Know where you stand.',
       icon: Star,
-      iconColor: 'text-emerald-400',
-      iconBg: 'bg-emerald-400/10',
+      iconColor: 'text-gray-400',
+      iconBg: 'bg-gray-400/10',
       accentBorder: 'border-[var(--color-dark-border)]',
       featured: false,
       features: [
@@ -39,7 +39,7 @@ export function PricingPage({ onSelectPlan, onBack }: PricingPageProps) {
       tagline: 'Build more. Stand out more.',
       icon: Crown,
       iconColor: 'text-white',
-      iconBg: 'bg-white/10',
+      iconBg: 'bg-[var(--color-accent)]',
       accentBorder: 'border-[#818cf8]',
       featured: true,
       features: [
@@ -52,7 +52,7 @@ export function PricingPage({ onSelectPlan, onBack }: PricingPageProps) {
         { text: 'Interview Prep Module', included: false },
       ],
       cta: 'Go Pro — $5',
-      ctaClass: 'bg-white text-[var(--color-accent-muted)] hover:bg-indigo-50',
+      ctaClass: 'bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-muted)]',
     },
     {
       id: 'elite' as const,
@@ -90,7 +90,7 @@ export function PricingPage({ onSelectPlan, onBack }: PricingPageProps) {
           <div
             key={plan.id}
             className={`rounded-3xl p-7 border flex flex-col hover-lift relative ${plan.featured
-              ? 'bg-gradient-to-b from-[#6366f1] to-[#4f46e5] shadow-2xl shadow-[var(--color-accent-glow)] md:-translate-y-4'
+              ? 'bg-[var(--color-dark-surface)] shadow-2xl shadow-[var(--color-accent-glow)] md:-translate-y-4'
               : 'bg-[var(--color-dark-card)]'
             } ${plan.accentBorder}`}
           >
@@ -104,25 +104,25 @@ export function PricingPage({ onSelectPlan, onBack }: PricingPageProps) {
               <plan.icon className={`h-5 w-5 ${plan.iconColor}`} />
             </div>
 
-            <h3 className={`font-bold text-2xl mb-1 ${plan.featured ? 'text-white' : 'text-[var(--color-text-primary)]'}`}>
+            <h3 className="font-bold text-2xl mb-1 text-[var(--color-text-primary)]">
               {plan.name}
             </h3>
-            <p className={`text-sm mb-4 ${plan.featured ? 'text-indigo-200' : 'text-[var(--color-text-muted)]'}`}>{plan.tagline}</p>
-            <div className={`text-4xl font-display font-bold mb-6 ${plan.featured ? 'text-white' : 'text-[var(--color-text-primary)]'}`}>
+            <p className="text-sm mb-4 text-[var(--color-text-muted)]">{plan.tagline}</p>
+            <div className="text-4xl font-display font-bold mb-6 text-[var(--color-text-primary)]">
               {plan.price}
-              <span className={`text-base font-normal ml-1 ${plan.featured ? 'text-indigo-200' : 'text-[var(--color-text-muted)]'}`}>
+              <span className="text-base font-normal ml-1 text-[var(--color-text-muted)]">
                 {plan.period}
               </span>
             </div>
 
             <ul className="space-y-3 mb-8 flex-1">
               {plan.features.map((feature, i) => (
-                <li key={i} className={`flex items-start gap-3 text-sm ${plan.featured ? 'text-indigo-100' : 'text-[var(--color-text-secondary)]'}`}>
+                <li key={i} className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
                   {feature.included ? (
                     <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                   ) : (
                     <span className="h-4 w-4 shrink-0 mt-0.5 flex items-center justify-center">
-                      <span className={`block w-3 h-px ${plan.featured ? 'bg-indigo-300/40' : 'bg-[var(--color-dark-border)]'}`} />
+                      <span className="block w-3 h-px bg-[var(--color-dark-border)]" />
                     </span>
                   )}
                   <span className={!feature.included ? 'opacity-40' : ''}>{feature.text}</span>
