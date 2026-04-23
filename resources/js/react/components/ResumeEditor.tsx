@@ -223,30 +223,76 @@ export function ResumeEditor({ initialContent, isPremium, onPricingClick }: Resu
                   "whitespace-pre-wrap leading-relaxed text-lg space-y-6 transition-all duration-500",
                   !isPremium && "blur-[6px] select-none pointer-events-none"
                 )}>
-                  {/* Fake formatted resume template */}
-                  <div className="border border-[var(--color-dark-border)] rounded-2xl p-10 bg-[var(--color-dark-surface)]">
-                    <div className="text-center mb-8 border-b border-[var(--color-dark-border)] pb-6">
-                      <h2 className="text-3xl font-bold text-[var(--color-text-primary)] font-display">MOAYED ELSHAFIA</h2>
-                      <p className="text-[var(--color-text-muted)] mt-2">Ludhiana, India • kamalmoayed@gmail.com</p>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-accent)] mb-2">Professional Summary</h3>
-                        <p className="text-[var(--color-text-secondary)] text-sm">Driven Computer Science student with a focus on software engineering, seeking to leverage academic foundation and analytical skills in a challenging development role.</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-accent)] mb-2">Education</h3>
-                        <p className="text-[var(--color-text-secondary)] text-sm"><strong className="text-[var(--color-text-primary)]">Bachelor of Computer Applications (BCA)</strong> — Chandigarh University, 2023–2026</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-accent)] mb-2">Technical Skills</h3>
-                        <p className="text-[var(--color-text-secondary)] text-sm">Python, JavaScript, React, SQL, Git, Docker, REST APIs, Data Structures & Algorithms</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-accent)] mb-2">Projects</h3>
-                        <p className="text-[var(--color-text-secondary)] text-sm"><strong className="text-[var(--color-text-primary)]">AI Resume Analyzer</strong> — Built a full-stack web application using Laravel and React to analyze resumes with Google Gemini API integration.</p>
-                      </div>
-                    </div>
+                  {/* Dynamic formatted resume preview */}
+                  <div className="border border-[var(--color-dark-border)] rounded-2xl overflow-hidden bg-white shadow-inner">
+                    {(() => {
+                      const lines = content.split('\n').filter(l => l.trim());
+                      const name = lines[0] || 'Your Name';
+                      const contact = lines[1] || 'Your Contact Info';
+                      const contentLines = lines.slice(2);
+
+                      if (selectedTemplate === 'modern') {
+                        return (
+                          <div className="flex min-h-[600px] font-sans text-left">
+                            <div className="w-1/3 bg-gray-800 text-white p-6 md:p-8">
+                              <h1 className="text-2xl font-bold mb-2 leading-tight">{name}</h1>
+                              <p className="text-xs text-gray-400 mb-8">{contact}</p>
+                              <h2 className="text-xs uppercase tracking-widest border-b border-gray-600 pb-1 mt-5 mb-3 font-bold text-gray-100">Profile Highlights</h2>
+                              <p className="text-xs text-gray-300 leading-relaxed">Selected to emphasize strong capability and modern workflow adaptation.</p>
+                            </div>
+                            <div className="w-2/3 p-6 md:p-8">
+                              {contentLines.map((line, i) => {
+                                const trimmed = line.trim();
+                                if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+                                  return <h2 key={i} className="text-xs uppercase tracking-widest text-rose-600 border-b-2 border-slate-100 pb-1 mt-6 mb-3 font-bold">{trimmed}</h2>;
+                                }
+                                return <p key={i} className="my-1.5 text-sm leading-relaxed text-slate-700">{trimmed}</p>;
+                              })}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (selectedTemplate === 'executive') {
+                        return (
+                          <div className="p-8 md:p-12 font-sans border-t-[8px] border-gray-800 text-left min-h-[600px]">
+                            <div className="text-center mb-8">
+                              <h1 className="text-3xl font-extrabold uppercase tracking-tight text-gray-900 mb-2">{name}</h1>
+                              <p className="text-gray-600 font-medium text-sm">{contact}</p>
+                            </div>
+                            {contentLines.map((line, i) => {
+                              const trimmed = line.trim();
+                              if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+                                return (
+                                  <div key={i} className="flex items-center mt-8 mb-4">
+                                    <h2 className="text-xs uppercase tracking-widest font-extrabold text-gray-900 mr-4 whitespace-nowrap">{trimmed}</h2>
+                                    <div className="flex-1 h-0.5 bg-gray-200"></div>
+                                  </div>
+                                );
+                              }
+                              return <p key={i} className="my-1.5 text-sm leading-relaxed text-gray-800">{trimmed}</p>;
+                            })}
+                          </div>
+                        );
+                      }
+
+                      // Classic template
+                      return (
+                        <div className="p-8 md:p-12 font-serif text-left min-h-[600px]">
+                          <div className="text-center mb-8">
+                            <h1 className="text-3xl mb-1 font-normal tracking-wide text-black">{name}</h1>
+                            <p className="text-gray-600 text-sm">{contact}</p>
+                          </div>
+                          {contentLines.map((line, i) => {
+                            const trimmed = line.trim();
+                            if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2) {
+                              return <h2 key={i} className="text-sm uppercase tracking-widest border-b border-gray-300 pb-1 mt-6 mb-3 font-bold text-black">{trimmed}</h2>;
+                            }
+                            return <p key={i} className="my-1.5 text-sm leading-relaxed text-gray-800">{trimmed}</p>;
+                          })}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
