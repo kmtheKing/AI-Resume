@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FieldOfWorkController;
 use App\Http\Controllers\ResumeAnalysisController;
+use App\Http\Controllers\LinkedInAuthController;
 use App\Models\FieldOfWork;
 use Illuminate\Support\Facades\Route;
 
@@ -31,5 +32,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('admin/fields', FieldOfWorkController::class);
 });
+
+// LinkedIn OAuth routes (no auth required — open to all users for resume generation)
+Route::get('/auth/linkedin', [LinkedInAuthController::class, 'redirectToLinkedIn'])->name('linkedin.redirect');
+Route::get('/auth/linkedin/callback', [LinkedInAuthController::class, 'handleLinkedInCallback'])->name('linkedin.callback');
+Route::get('/api/linkedin/result', [LinkedInAuthController::class, 'getLinkedInResult'])->name('linkedin.result');
 
 require __DIR__.'/auth.php';

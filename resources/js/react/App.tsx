@@ -15,7 +15,7 @@ import { analyzeResume, ResumeAnalysis } from './services/gemini';
 import { Sparkles, ArrowLeft, FileText, Target, Zap, BookOpen, CheckCircle, Lock, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-type AppState = 'upload' | 'analyzing' | 'results' | 'editor' | 'pricing' | 'payment' | 'success' | 'interview';
+type AppState = 'upload' | 'analyzing' | 'linkedin_loading' | 'results' | 'editor' | 'pricing' | 'payment' | 'success' | 'interview';
 type PlanTier = 'none' | 'starter' | 'pro' | 'elite';
 
 /* Scroll-reveal hook */
@@ -191,6 +191,45 @@ export default function App() {
   const isPremium = tier === 'pro' || tier === 'elite';
   const hasInterviewPrep = tier === 'elite';
 
+  // ── On mount: if we just returned from LinkedIn OAuth, poll for the result ──
+  useEffect(() => {
+    if (!AppConfig?.linkedinPending) return;
+
+    setState('linkedin_loading');
+
+    let attempts = 0;
+    const maxAttempts = 30; // 30 × 2s = 60s timeout
+
+    const poll = async () => {
+      try {
+        const res = await fetch(AppConfig.routes.linkedinResult, {
+          headers: { 'X-CSRF-TOKEN': AppConfig.csrfToken, 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (data.status === 'ready') {
+          setAnalysis(data.analysis);
+          setResumeText(data.resumeText);
+          setResumeField(data.field || '');
+          setState('editor');
+          return;
+        }
+      } catch (e) {
+        console.error('LinkedIn result poll failed:', e);
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(poll, 2000);
+      } else {
+        setState('upload');
+        alert('LinkedIn resume generation timed out. Please try again.');
+      }
+    };
+
+    poll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Persist tier and update global theme color dynamically
   useEffect(() => {
     localStorage.setItem('ai_resume_tier', tier);
@@ -364,6 +403,40 @@ export default function App() {
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold text-[var(--color-text-primary)] font-display">Analyzing your resume...</h2>
                 <p className="text-[var(--color-text-muted)]">Our AI is scanning for keywords, impact, and ATS compatibility.</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* LINKEDIN LOADING */}
+          {state === 'linkedin_loading' && (
+            <motion.div
+              key="linkedin_loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-20 space-y-8"
+            >
+              <div className="relative">
+                <div className="h-24 w-24 rounded-full border-4 border-[var(--color-dark-border)] border-t-[#0a66c2] animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#0a66c2 0%,#0077b5 100%)' }}>
+                    <svg viewBox="0 0 24 24" fill="white" className="h-6 w-6">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold text-[var(--color-text-primary)] font-display">Building your resume from LinkedIn...</h2>
+                <p className="text-[var(--color-text-muted)]">Our AI is analysing your profile and crafting a professional, ATS-optimized resume.</p>
+              </div>
+              <div className="flex flex-col items-start gap-3 text-sm text-[var(--color-text-muted)]">
+                {['Fetching your LinkedIn profile data', 'Extracting work history & skills', 'Generating ATS-optimized resume', 'Scoring & analysis complete'].map((step, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full animate-pulse" style={{ background: '#0a66c2', animationDelay: `${i * 0.3}s` }} />
+                    {step}
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}

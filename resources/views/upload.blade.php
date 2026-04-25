@@ -21,11 +21,15 @@
                     improve: "/api/resume/improve",
                     login: "{{ route('login') }}",
                     register: "{{ route('register') }}",
-                    updateTier: "/api/user/tier"
+                    updateTier: "/api/user/tier",
+                    linkedinRedirect: "{{ route('linkedin.redirect') }}",
+                    linkedinResult: "{{ route('linkedin.result') }}"
                 },
                 isAuthenticated: {{ auth()->check() ? 'true' : 'false' }},
                 user: @json(auth()->check() ? ['name' => auth()->user()->name, 'avatar' => auth()->user()->avatar, 'tier' => auth()->user()->tier ?? 'none'] : null),
-                fieldsOfWork: @json($fields)
+                fieldsOfWork: @json($fields),
+                // True when redirected back from LinkedIn OAuth — React will poll /api/linkedin/result
+                linkedinPending: {{ session()->has('linkedin_success') ? 'true' : 'false' }}
             };
         </script>
     </head>
