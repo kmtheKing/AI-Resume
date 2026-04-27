@@ -183,7 +183,7 @@ class LinkedInAuthController extends Controller
      */
     private function generateResumeFromProfile(string $profileText, string $field): ?array
     {
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
         if (!$apiKey) return null;
 
         $prompt = "You are a world-class Executive Resume Writer and Career Coach.

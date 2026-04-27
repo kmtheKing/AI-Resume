@@ -28,7 +28,7 @@ class ResumeAnalysisController extends Controller
             'status' => 'analyzing',
         ]);
 
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
         if (!$apiKey) {
             return response()->json(['error' => 'Gemini API Key missing. Please check .env'], 500);
         }
@@ -110,7 +110,7 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
             'context' => 'required|string',
         ]);
 
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
         if (!$apiKey) {
             return response()->json(['error' => 'Gemini API Key missing.'], 500);
         }
