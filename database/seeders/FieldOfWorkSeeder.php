@@ -2,16 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\FieldOfWork;
 use Illuminate\Database\Seeder;
 
 class FieldOfWorkSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        FieldOfWork::updateOrCreate(
+            ['name' => 'English Literature'],
+            [
+                'category' => 'Arts & Humanities',
+                'description' => 'Academic and professional field focused on literature written in English, including critical analysis, writing, and teaching.',
+            ]
+        );
     }
 }
