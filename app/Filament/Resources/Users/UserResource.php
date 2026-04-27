@@ -13,7 +13,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Forms\Components;
 use Filament\Tables\Columns;
-use Filament\Tables\Actions\EditAction;
+use Filament\Actions\EditAction;
 
 class UserResource extends Resource
 {
