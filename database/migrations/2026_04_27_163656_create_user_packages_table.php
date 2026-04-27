@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('package_id')->constrained()->restrictOnDelete();
             $table->string('payment_reference')->nullable()->unique();
             $table->string('payment_method')->nullable();
-            $table->unsignedDecimal('amount_paid', 8, 2);
+            $table->decimal('amount_paid', 8, 2)->unsigned();
             $table->string('currency', 3)->default('USD');
             $table->enum('status', ['active', 'expired', 'cancelled', 'refunded'])->default('active');
             $table->timestamp('started_at')->useCurrent();
