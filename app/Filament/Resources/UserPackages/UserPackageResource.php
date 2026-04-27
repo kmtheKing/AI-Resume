@@ -5,8 +5,6 @@ namespace App\Filament\Resources\UserPackages;
 use App\Filament\Resources\UserPackages\Pages\CreateUserPackage;
 use App\Filament\Resources\UserPackages\Pages\EditUserPackage;
 use App\Filament\Resources\UserPackages\Pages\ListUserPackages;
-use App\Filament\Resources\UserPackages\Schemas\UserPackageForm;
-use App\Filament\Resources\UserPackages\Tables\UserPackagesTable;
 use App\Models\UserPackage;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -15,7 +13,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Forms\Components;
 use Filament\Tables\Columns;
-use Filament\Tables\Actions;
+use Filament\Tables\Actions\EditAction;
 
 class UserPackageResource extends Resource
 {
@@ -74,7 +72,7 @@ class UserPackageResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([]);
     }

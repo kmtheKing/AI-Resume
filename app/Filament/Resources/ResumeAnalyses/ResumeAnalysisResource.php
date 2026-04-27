@@ -5,8 +5,6 @@ namespace App\Filament\Resources\ResumeAnalyses;
 use App\Filament\Resources\ResumeAnalyses\Pages\CreateResumeAnalysis;
 use App\Filament\Resources\ResumeAnalyses\Pages\EditResumeAnalysis;
 use App\Filament\Resources\ResumeAnalyses\Pages\ListResumeAnalyses;
-use App\Filament\Resources\ResumeAnalyses\Schemas\ResumeAnalysisForm;
-use App\Filament\Resources\ResumeAnalyses\Tables\ResumeAnalysesTable;
 use App\Models\ResumeAnalysis;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -15,7 +13,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Forms\Components;
 use Filament\Tables\Columns;
-use Filament\Tables\Actions;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 class ResumeAnalysisResource extends Resource
 {
@@ -63,12 +64,12 @@ class ResumeAnalysisResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Actions\ViewAction::make(),
-                Actions\DeleteAction::make(),
+                ViewAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

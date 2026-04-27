@@ -13,7 +13,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Forms\Components;
 use Filament\Tables\Columns;
-use Filament\Tables\Actions;
+use Filament\Tables\Actions\EditAction;
 
 class UserResource extends Resource
 {
@@ -48,7 +48,7 @@ class UserResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([]);
     }
