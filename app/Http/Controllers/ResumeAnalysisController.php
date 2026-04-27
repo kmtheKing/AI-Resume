@@ -66,7 +66,7 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
 - 'weaknesses' (array of strings)
 - 'suggestions' (array of objects, each with 'section', 'improvement', and 'reason' string properties)
 - 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness)
-- 'arrangedText' (string: the candidate's resume text beautifully formatted for a PROFESSIONAL ONE-PAGE layout. Use clean spacing, distinct section headers in ALL CAPS, and clear bullet points. Ensure the output is concise, impactful, and follows executive resume standards: Name and Contact info at top, followed by Summary, then Experience, then Education and Skills. Use standard symbols like '•' for bullets).";
+- 'arrangedText' (string: The candidate's resume text COMPLETELY REWRITTEN AND TAILORED for the '{$request->field}' field. You MUST optimize the Professional Summary and rewrite Experience bullet points to highlight transferable skills, use industry-specific keywords, and align perfectly with the Field standards. Format it beautifully for a PROFESSIONAL ONE-PAGE layout with distinct section headers in ALL CAPS (SUMMARY, EXPERIENCE, EDUCATION, SKILLS). Use standard symbols like '•' for bullets).";
         
         $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
