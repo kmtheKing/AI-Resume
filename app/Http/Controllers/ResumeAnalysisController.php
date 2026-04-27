@@ -23,6 +23,7 @@ class ResumeAnalysisController extends Controller
         $path = $file->store('resumes', 'public');
 
         $analysis = ResumeAnalysis::create([
+            'user_id' => auth()->id(),
             'file_path' => $path,
             'field_of_work_id' => $fieldRecord->id,
             'status' => 'analyzing',
@@ -82,6 +83,7 @@ Please return a valid JSON object EXCLUSIVELY with the following keys, no markdo
             $analysis->update([
                 'status' => 'completed',
                 'result' => $resultInfo,
+                'tokens_used' => (int) ((strlen($prompt) + strlen($text)) / 4), // Rough estimate: 1 token ≈ 4 chars
             ]);
 
             $arrangedText = $resultInfo['arrangedText'] ?? $parsedText;
