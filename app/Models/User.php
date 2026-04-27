@@ -38,4 +38,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(SocialMediaToken::class);
     }
+
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(UserLoginHistory::class)->latest('logged_in_at');
+    }
+
+    public function userPackages(): HasMany
+    {
+        return $this->hasMany(UserPackage::class)->latest();
+    }
+
+    public function activePackage()
+    {
+        return $this->hasOne(UserPackage::class)
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->latestOfMany('started_at');
+    }
 }
