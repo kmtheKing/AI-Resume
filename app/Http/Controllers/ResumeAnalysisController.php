@@ -51,22 +51,38 @@ class ResumeAnalysisController extends Controller
         }
 
         // Deep prompt mapping exactly to React ResumeAnalysis Interface
-        $prompt = "You are an expert AI Resume Analyzer and Career Coach. 
-Analyze the following candidate RESUME TEXT against the requirements and standards for the field of '{$request->field}'.
-Field standards/requirements: {$fieldRecord->description}. 
+        $prompt = "You are the Senior CV Architect & Active Intelligence Editor specializing in high-growth sectors. Function as a 'Live Intelligence Layer' for a resume builder. 
+Analyze the candidate RESUME TEXT against the requirements and standards for their target field of '{$request->field}'.
+Field standards/requirements: {$fieldRecord->description}.
+
+TASK REQUIREMENTS:
+1. Contextual Intelligence: Generate a Strategy Report identifying critical experience gaps (Key Suggestions) and structural/linguistic fixes (Writing Tips).
+2. The 'Uniqueness' Rule: Within your tips, provide at least one contrarian or highly specific piece of advice that goes beyond standard generic resume tips.
+3. Adaptive AI Summary: Rewrite the candidate's professional summary. You MUST wrap any significantly improved, high-impact keywords, or newly added professional phrasing in <mark> tags (e.g., <mark>Led a team of 5</mark>) so the user can visually see exactly what you enhanced from their original text.
+4. Precision Over Length: Ensure tips and summaries are impactful, concise, and tailored to a professional ONE-PAGE format.
 
 --- CANDIDATE RESUME START ---
 {$parsedText}
 --- CANDIDATE RESUME END ---
 
-Please return a valid JSON object EXCLUSIVELY with the following keys, no markdown, no other text:
-- 'score' (number between 0-100 indicating general fit)
-- 'summary' (string: a professional summary of their fit)
-- 'strengths' (array of strings)
-- 'weaknesses' (array of strings)
-- 'suggestions' (array of objects, each with 'section', 'improvement', and 'reason' string properties)
-- 'atsCompatibility' (number between 0-100 indicating ATS parser friendliness)
-- 'arrangedText' (string: The candidate's resume text COMPLETELY REWRITTEN AND TAILORED for the '{$request->field}' field. You MUST optimize the Professional Summary and rewrite Experience bullet points to highlight transferable skills, use industry-specific keywords, and align perfectly with the Field standards. Format it beautifully for a PROFESSIONAL ONE-PAGE layout with distinct section headers in ALL CAPS (SUMMARY, EXPERIENCE, EDUCATION, SKILLS). Use standard symbols like '•' for bullets).";
+Please return a valid JSON object EXCLUSIVELY with the following keys. Do not include markdown formatting like ```json or any conversational text:
+{
+  \"score\": [number between 0-100 indicating general fit],
+  \"summary\": \"[string: a 3-sentence high-impact summary with <mark> tags around your edits]\",
+  \"strengths\": [\"[string]\", \"[string]\"],
+  \"weaknesses\": [\"[string]\", \"[string]\"],
+  \"writing_tips\": [\"[string: focus on structural/linguistic fixes like replacing passive voice with action verbs]\"],
+  \"key_suggestions\": [\"[string: strategic advice on content gaps, missing skills, and industry requirements]\"],
+  \"suggestions\": [
+    {
+      \"section\": \"[string]\",
+      \"improvement\": \"[string]\",
+      \"reason\": \"[string]\"
+    }
+  ],
+  \"atsCompatibility\": [number between 0-100 indicating ATS parser friendliness],
+  \"arrangedText\": \"[string: The candidate's resume text COMPLETELY REWRITTEN AND TAILORED for the target field. Optimize the Professional Summary and rewrite Experience bullet points. Use standard symbols like '•' for bullets and distinct section headers in ALL CAPS.]\"
+}";
         
         $response = Http::withOptions(['verify' => false])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
             'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
